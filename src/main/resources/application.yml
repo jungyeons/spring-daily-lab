@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: spring-daily-lab
+  datasource:
+    url: "${DB_URL:jdbc:h2:mem:dailylab;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE}"
+    username: "${DB_USERNAME:sa}"
+    password: "${DB_PASSWORD:}"
+  flyway:
+    enabled: true
+  h2:
+    console:
+      enabled: "${H2_CONSOLE_ENABLED:true}"
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+server:
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Spring Daily Lab
+    description: Daily growth task management API
