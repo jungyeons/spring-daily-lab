@@ -101,7 +101,7 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 | `DB_PASSWORD` | 빈 값 |
 | `H2_CONSOLE_ENABLED` | `true` |
 
-스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
+스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다. 버전 마이그레이션은 `V<양의 정수>__lowercase_words.sql`, 반복 마이그레이션은 `R__lowercase_words.sql` 형식을 따라야 하며 CI에서 검사합니다.
 
 ## 기여 자동화 원칙
 
