@@ -34,6 +34,8 @@ docker compose up --build
 
 ## API 예시
 
+IntelliJ IDEA에서는 [전체 API 요청 예제](http/spring-daily-lab.http)를 열고 애플리케이션 실행 후 각 요청의 실행 아이콘을 누르면 됩니다. 생성 요청은 이후 예제에서 사용할 작업 ID를 자동으로 저장합니다.
+
 작업 생성:
 
 ```bash
