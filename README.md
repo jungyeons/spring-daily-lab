@@ -62,6 +62,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+여러 작업 상태 변경(모든 대상이 존재할 때만 적용):
+
+```bash
+curl -X PATCH http://localhost:8080/api/v1/tasks/bulk-status \
+  -H 'Content-Type: application/json' \
+  -d '{"taskIds":[1,2,3],"status":"DONE"}'
+```
+
 요약 통계:
 
 ```bash
@@ -77,6 +85,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `PATCH` | `/api/v1/tasks/bulk-status` | 여러 작업 상태를 원자적으로 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 

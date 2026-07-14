@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.BulkChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
@@ -74,6 +76,16 @@ public class TaskService {
 		GrowthTask task = getTask(id);
 		task.changeStatus(request.status());
 		return TaskResponse.from(task);
+	}
+
+	public List<TaskResponse> changeStatuses(BulkChangeTaskStatusRequest request) {
+		return request.taskIds().stream()
+				.map(this::getTask)
+				.map(task -> {
+					task.changeStatus(request.status());
+					return TaskResponse.from(task);
+				})
+				.toList();
 	}
 
 	public void delete(long id) {
