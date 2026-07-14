@@ -82,6 +82,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
+상태 코드별 처리 방법과 필드 검증 오류 형식은 [API 오류 코드 카탈로그](docs/api-error-catalog.md)를 참고하세요.
+
 ## 검증
 
 ```bash
