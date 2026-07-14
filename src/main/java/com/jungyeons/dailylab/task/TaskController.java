@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.BulkChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
@@ -78,6 +80,11 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PatchMapping("/bulk-status")
+	public List<TaskResponse> changeStatuses(@Valid @RequestBody BulkChangeTaskStatusRequest request) {
+		return taskService.changeStatuses(request);
 	}
 
 	@DeleteMapping("/{id}")
