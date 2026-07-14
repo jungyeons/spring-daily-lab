@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
@@ -52,9 +54,11 @@ public class TaskController {
 	public Page<TaskResponse> findAll(
 			@RequestParam(required = false) TaskStatus status,
 			@RequestParam(required = false) TaskCategory category,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDateFrom,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDateTo,
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
-		return taskService.findAll(status, category, pageable);
+		return taskService.findAll(status, category, dueDateFrom, dueDateTo, pageable);
 	}
 
 	@GetMapping("/summary")
