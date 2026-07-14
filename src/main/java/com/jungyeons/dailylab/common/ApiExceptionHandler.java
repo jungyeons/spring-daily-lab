@@ -46,6 +46,13 @@ public class ApiExceptionHandler {
 		return problem;
 	}
 
+	@ExceptionHandler(InvalidSortPropertyException.class)
+	ProblemDetail handleInvalidSortProperty(InvalidSortPropertyException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+		problem.setTitle("Unsupported sort property");
+		return problem;
+	}
+
 	@ExceptionHandler(OptimisticLockingFailureException.class)
 	ProblemDetail handleOptimisticLock(OptimisticLockingFailureException exception) {
 		ProblemDetail problem = ProblemDetail.forStatusAndDetail(

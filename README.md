@@ -82,6 +82,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
+목록 정렬에는 `id`, `title`, `category`, `status`, `priority`, `dueDate`, `createdAt`, `updatedAt`, `completedAt`만 사용할 수 있습니다. 허용되지 않은 `sort` 값은 `400 Bad Request`로 거부됩니다.
+
 ## 검증
 
 ```bash
