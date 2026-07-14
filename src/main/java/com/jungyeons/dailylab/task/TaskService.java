@@ -39,18 +39,15 @@ public class TaskService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, Pageable pageable) {
-		Page<GrowthTask> tasks;
-		if (status != null && category != null) {
-			tasks = taskRepository.findByStatusAndCategory(status, category, pageable);
-		} else if (status != null) {
-			tasks = taskRepository.findByStatus(status, pageable);
-		} else if (category != null) {
-			tasks = taskRepository.findByCategory(category, pageable);
-		} else {
-			tasks = taskRepository.findAll(pageable);
-		}
-		return tasks.map(TaskResponse::from);
+	public Page<TaskResponse> findAll(
+			TaskStatus status,
+			TaskCategory category,
+			String query,
+			Pageable pageable
+	) {
+		String normalizedQuery = query == null || query.isBlank() ? null : query.trim();
+		return taskRepository.findAllFiltered(status, category, normalizedQuery, pageable)
+				.map(TaskResponse::from);
 	}
 
 	@Transactional(readOnly = true)

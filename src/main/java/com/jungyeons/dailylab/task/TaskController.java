@@ -52,9 +52,10 @@ public class TaskController {
 	public Page<TaskResponse> findAll(
 			@RequestParam(required = false) TaskStatus status,
 			@RequestParam(required = false) TaskCategory category,
+			@RequestParam(required = false) String query,
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
-		return taskService.findAll(status, category, pageable);
+		return taskService.findAll(status, category, query, pageable);
 	}
 
 	@GetMapping("/summary")
