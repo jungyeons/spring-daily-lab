@@ -70,7 +70,7 @@
 ## Phase 6 — Delivery and documentation
 
 - [ ] `DEVX-001` OpenAPI 문서와 예제 요청·응답을 추가한다.
-- [ ] `DEVX-002` API 오류 코드 카탈로그를 문서화한다.
+- [x] `DEVX-002` API 오류 코드 카탈로그를 문서화한다.
 - [ ] `DEVX-003` 주요 아키텍처 결정을 ADR 형식으로 기록한다.
 - [ ] `DEVX-004` IntelliJ HTTP Client용 전체 API 예제를 추가한다.
 - [ ] `DEVX-005` 한국어·영어 README 동기화 구조를 추가한다.
