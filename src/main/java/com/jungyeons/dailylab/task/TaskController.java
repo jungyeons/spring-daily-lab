@@ -1,9 +1,11 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
+import com.jungyeons.dailylab.common.InvalidSortPropertyException;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
@@ -31,6 +34,10 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
+
+	private static final Set<String> ALLOWED_SORT_PROPERTIES = Set.of(
+			"id", "title", "category", "status", "priority", "dueDate", "createdAt", "updatedAt", "completedAt"
+	);
 
 	private final TaskService taskService;
 
@@ -54,7 +61,16 @@ public class TaskController {
 			@RequestParam(required = false) TaskCategory category,
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
+		validateSortProperties(pageable.getSort());
 		return taskService.findAll(status, category, pageable);
+	}
+
+	private void validateSortProperties(Sort sort) {
+		for (Sort.Order order : sort) {
+			if (!ALLOWED_SORT_PROPERTIES.contains(order.getProperty())) {
+				throw new InvalidSortPropertyException(order.getProperty());
+			}
+		}
 	}
 
 	@GetMapping("/summary")
