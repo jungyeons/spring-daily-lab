@@ -22,5 +22,7 @@ jobs:
           java-version: "21"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
+      - name: Validate Flyway migration names
+        run: bash scripts/check-flyway-migration-names.sh
       - name: Run checks
         run: ./gradlew check --no-daemon
