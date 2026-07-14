@@ -1,0 +1,59 @@
+@baseUrl = http://localhost:8080
+@taskId = 1
+
+### Create a task
+# Run this request first. The response handler stores its ID for the remaining examples.
+POST {{baseUrl}}/api/v1/tasks
+Content-Type: application/json
+
+{
+  "title": "Add API integration tests",
+  "description": "Cover the primary task workflow",
+  "category": "TEST",
+  "priority": 4,
+  "dueDate": "2030-12-31"
+}
+
+> {%
+  client.global.set("taskId", response.body.id);
+%}
+
+### List tasks with status and category filters
+GET {{baseUrl}}/api/v1/tasks?status=TODO&category=TEST&page=0&size=20&sort=createdAt,desc
+
+### Get a task
+GET {{baseUrl}}/api/v1/tasks/{{taskId}}
+
+### Replace a task
+PUT {{baseUrl}}/api/v1/tasks/{{taskId}}
+Content-Type: application/json
+
+{
+  "title": "Add API integration tests",
+  "description": "Cover creation, replacement, status changes, and deletion",
+  "category": "TEST",
+  "priority": 5,
+  "dueDate": "2030-12-31"
+}
+
+### Mark a task as in progress
+PATCH {{baseUrl}}/api/v1/tasks/{{taskId}}/status
+Content-Type: application/json
+
+{
+  "status": "IN_PROGRESS"
+}
+
+### Mark a task as done
+PATCH {{baseUrl}}/api/v1/tasks/{{taskId}}/status
+Content-Type: application/json
+
+{
+  "status": "DONE"
+}
+
+### Read task summary
+GET {{baseUrl}}/api/v1/tasks/summary
+
+### Delete a task
+DELETE {{baseUrl}}/api/v1/tasks/{{taskId}}
