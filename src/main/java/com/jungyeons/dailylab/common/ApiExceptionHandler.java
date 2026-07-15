@@ -2,6 +2,7 @@ package com.jungyeons.dailylab.common;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.time.DateTimeException;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,13 @@ public class ApiExceptionHandler {
 				"Malformed JSON or unsupported enum value"
 		);
 		problem.setTitle("Unreadable request");
+		return problem;
+	}
+
+	@ExceptionHandler(DateTimeException.class)
+	ProblemDetail handleInvalidTimeZone(DateTimeException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Unknown time zone");
+		problem.setTitle("Invalid time zone");
 		return problem;
 	}
 

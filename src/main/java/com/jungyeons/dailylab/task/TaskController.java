@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.time.ZoneId;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
+import com.jungyeons.dailylab.task.api.TaskStreakResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 import jakarta.validation.Valid;
@@ -33,9 +35,11 @@ import jakarta.validation.Valid;
 public class TaskController {
 
 	private final TaskService taskService;
+	private final TaskStreakService taskStreakService;
 
-	public TaskController(TaskService taskService) {
+	public TaskController(TaskService taskService, TaskStreakService taskStreakService) {
 		this.taskService = taskService;
+		this.taskStreakService = taskStreakService;
 	}
 
 	@PostMapping
@@ -60,6 +64,11 @@ public class TaskController {
 	@GetMapping("/summary")
 	public TaskSummaryResponse summary() {
 		return taskService.summary();
+	}
+
+	@GetMapping("/reports/streak")
+	public TaskStreakResponse streak(@RequestParam(defaultValue = "UTC") String zoneId) {
+		return taskStreakService.calculate(ZoneId.of(zoneId));
 	}
 
 	@GetMapping("/{id}")

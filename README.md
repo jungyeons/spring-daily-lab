@@ -68,6 +68,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
 curl http://localhost:8080/api/v1/tasks/summary
 ```
 
+타임존 기준 연속 달성일:
+
+```bash
+curl 'http://localhost:8080/api/v1/tasks/reports/streak?zoneId=Asia/Seoul'
+```
+
+완료 시각을 요청 타임존의 날짜로 변환해 현재 및 최장 연속 달성일을 계산합니다. 오늘 완료가 아직 없다면 어제까지 이어진 기록도 현재 연속 기록으로 봅니다.
+
 ## 엔드포인트
 
 | Method | Path | 설명 |
@@ -79,6 +87,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/tasks/reports/streak` | 타임존 기준 현재·최장 연속 달성일 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
