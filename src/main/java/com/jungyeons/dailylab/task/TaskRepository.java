@@ -1,10 +1,13 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.time.Instant;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
@@ -21,4 +24,7 @@ public interface TaskRepository extends JpaRepository<GrowthTask, Long> {
 	long countByStatus(TaskStatus status);
 
 	long countByDueDateBeforeAndStatusNot(LocalDate date, TaskStatus status);
+
+	@Query("select task.completedAt from GrowthTask task where task.completedAt is not null order by task.completedAt")
+	List<Instant> findAllCompletionInstants();
 }
