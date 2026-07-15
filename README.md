@@ -68,6 +68,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
 curl http://localhost:8080/api/v1/tasks/summary
 ```
 
+CSV 내보내기:
+
+```bash
+curl -OJ http://localhost:8080/api/v1/tasks/exports/tasks.csv
+```
+
+UTF-8과 CRLF 행 구분자를 사용하며 쉼표, 큰따옴표, 줄바꿈이 포함된 필드는 RFC 4180 방식으로 인용합니다.
+
 ## 엔드포인트
 
 | Method | Path | 설명 |
@@ -79,6 +87,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/tasks/exports/tasks.csv` | 전체 작업 CSV 다운로드 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
