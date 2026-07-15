@@ -68,6 +68,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
 curl http://localhost:8080/api/v1/tasks/summary
 ```
 
+월간 분류별 추세:
+
+```bash
+curl 'http://localhost:8080/api/v1/tasks/reports/monthly-trends?months=6&zoneId=Asia/Seoul'
+```
+
+최근 1~24개월의 생성·완료 수를 월과 작업 분류별로 반환합니다. 데이터가 없는 조합도 0으로 포함해 클라이언트가 누락된 월을 보정할 필요가 없습니다.
+
 ## 엔드포인트
 
 | Method | Path | 설명 |
@@ -79,6 +87,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/tasks/reports/monthly-trends` | 월간 분류별 생성·완료 추세 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
