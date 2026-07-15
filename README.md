@@ -90,6 +90,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+통합 테스트는 Flyway가 만든 실제 스키마에 직접 SQL을 실행해 필수 컬럼, 문자열 길이, enum 허용값, 우선순위 범위, 낙관적 잠금 초기값을 검증합니다. 애플리케이션 검증을 우회해도 데이터베이스 불변식이 유지되는지 회귀 검사합니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
