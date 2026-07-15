@@ -103,6 +103,8 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
 
+운영 데이터 보호 절차는 [PostgreSQL 백업·복원 runbook](docs/backup-restore.md)에 정리되어 있습니다. 제공된 검증 스크립트는 덤프를 격리된 임시 데이터베이스에 실제 복원하고 테이블, Flyway 이력, 작업 행 수를 확인합니다.
+
 ## 기여 자동화 원칙
 
 매일 자동 작업은 [ROADMAP.md](ROADMAP.md)의 미완료 항목과 현재 이슈·PR을 검토하고, 서로 독립적인 실제 개선을 최대 10개까지 초안 PR로 제안합니다.
