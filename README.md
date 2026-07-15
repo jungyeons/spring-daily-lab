@@ -68,6 +68,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
 curl http://localhost:8080/api/v1/tasks/summary
 ```
 
+주간 보고서:
+
+```bash
+curl 'http://localhost:8080/api/v1/tasks/reports/weekly?weekStart=2030-12-30&zoneId=Asia/Seoul'
+```
+
+`weekStart`는 월요일이어야 하며 생략하면 요청 타임존의 이번 주 월요일을 사용합니다. `completed`는 해당 주에 완료된 작업, `incomplete`는 주말까지 생성되었지만 현재 완료되지 않은 작업, `overdue`는 보고 시점까지 기한이 지난 미완료 작업 수입니다.
+
 ## 엔드포인트
 
 | Method | Path | 설명 |
@@ -79,6 +87,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/tasks/reports/weekly` | 주간 완료·미완료·기한 초과 보고서 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 

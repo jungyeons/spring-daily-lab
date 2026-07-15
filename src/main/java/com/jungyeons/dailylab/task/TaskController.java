@@ -1,10 +1,13 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,7 @@ import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
+import com.jungyeons.dailylab.task.api.WeeklyTaskReportResponse;
 
 import jakarta.validation.Valid;
 
@@ -33,9 +37,11 @@ import jakarta.validation.Valid;
 public class TaskController {
 
 	private final TaskService taskService;
+	private final TaskWeeklyReportService taskWeeklyReportService;
 
-	public TaskController(TaskService taskService) {
+	public TaskController(TaskService taskService, TaskWeeklyReportService taskWeeklyReportService) {
 		this.taskService = taskService;
+		this.taskWeeklyReportService = taskWeeklyReportService;
 	}
 
 	@PostMapping
@@ -60,6 +66,14 @@ public class TaskController {
 	@GetMapping("/summary")
 	public TaskSummaryResponse summary() {
 		return taskService.summary();
+	}
+
+	@GetMapping("/reports/weekly")
+	public WeeklyTaskReportResponse weeklyReport(
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart,
+			@RequestParam(defaultValue = "UTC") String zoneId
+	) {
+		return taskWeeklyReportService.report(weekStart, ZoneId.of(zoneId));
 	}
 
 	@GetMapping("/{id}")
