@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jungyeons.dailylab.common.TaskNotFoundException;
+import com.jungyeons.dailylab.common.TaskVersionMismatchException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
@@ -59,7 +60,12 @@ public class TaskService {
 	}
 
 	public TaskResponse update(long id, UpdateTaskRequest request) {
+		return update(id, request, null);
+	}
+
+	public TaskResponse update(long id, UpdateTaskRequest request, Long expectedVersion) {
 		GrowthTask task = getTask(id);
+		checkVersion(task, expectedVersion);
 		task.update(
 				request.title(),
 				request.description(),
@@ -67,17 +73,29 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		taskRepository.flush();
 		return TaskResponse.from(task);
 	}
 
 	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request) {
+		return changeStatus(id, request, null);
+	}
+
+	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request, Long expectedVersion) {
 		GrowthTask task = getTask(id);
+		checkVersion(task, expectedVersion);
 		task.changeStatus(request.status());
+		taskRepository.flush();
 		return TaskResponse.from(task);
 	}
 
 	public void delete(long id) {
+		delete(id, null);
+	}
+
+	public void delete(long id, Long expectedVersion) {
 		GrowthTask task = getTask(id);
+		checkVersion(task, expectedVersion);
 		taskRepository.delete(task);
 	}
 
@@ -94,5 +112,11 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private void checkVersion(GrowthTask task, Long expectedVersion) {
+		if (expectedVersion != null && task.getVersion() != expectedVersion) {
+			throw new TaskVersionMismatchException(expectedVersion, task.getVersion());
+		}
 	}
 }
