@@ -18,6 +18,7 @@ public record TaskResponse(
 		Instant createdAt,
 		Instant updatedAt,
 		Instant completedAt,
+		Instant archivedAt,
 		long version
 ) {
 	public static TaskResponse from(GrowthTask task) {
@@ -32,6 +33,7 @@ public record TaskResponse(
 				task.getCreatedAt(),
 				task.getUpdatedAt(),
 				task.getCompletedAt(),
+				task.getArchivedAt(),
 				task.getVersion()
 		);
 	}

@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.jungyeons.dailylab.common.TaskArchiveException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,6 +52,8 @@ public class GrowthTask {
 	private Instant updatedAt;
 
 	private Instant completedAt;
+
+	private Instant archivedAt;
 
 	@Version
 	@Column(nullable = false)
@@ -98,6 +102,23 @@ public class GrowthTask {
 
 	public boolean isOverdue(LocalDate today) {
 		return dueDate != null && dueDate.isBefore(today) && status != TaskStatus.DONE;
+	}
+
+	public void archive() {
+		if (status != TaskStatus.DONE) {
+			throw new TaskArchiveException("Only completed tasks can be archived");
+		}
+		if (archivedAt != null) {
+			throw new TaskArchiveException("Task is already archived");
+		}
+		archivedAt = Instant.now();
+	}
+
+	public void unarchive() {
+		if (archivedAt == null) {
+			throw new TaskArchiveException("Task is not archived");
+		}
+		archivedAt = null;
 	}
 
 	@PrePersist
@@ -168,6 +189,10 @@ public class GrowthTask {
 
 	public Instant getCompletedAt() {
 		return completedAt;
+	}
+
+	public Instant getArchivedAt() {
+		return archivedAt;
 	}
 
 	public long getVersion() {

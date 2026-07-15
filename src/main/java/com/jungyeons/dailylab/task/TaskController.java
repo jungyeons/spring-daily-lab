@@ -52,9 +52,10 @@ public class TaskController {
 	public Page<TaskResponse> findAll(
 			@RequestParam(required = false) TaskStatus status,
 			@RequestParam(required = false) TaskCategory category,
+			@RequestParam(defaultValue = "false") boolean archived,
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
-		return taskService.findAll(status, category, pageable);
+		return taskService.findAll(status, category, archived, pageable);
 	}
 
 	@GetMapping("/summary")
@@ -78,6 +79,16 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PatchMapping("/{id}/archive")
+	public TaskResponse archive(@PathVariable long id) {
+		return taskService.archive(id);
+	}
+
+	@PatchMapping("/{id}/unarchive")
+	public TaskResponse unarchive(@PathVariable long id) {
+		return taskService.unarchive(id);
 	}
 
 	@DeleteMapping("/{id}")
