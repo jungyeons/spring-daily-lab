@@ -55,4 +55,20 @@ public class ApiExceptionHandler {
 		problem.setTitle("Concurrent update conflict");
 		return problem;
 	}
+
+	@ExceptionHandler(TaskVersionMismatchException.class)
+	ProblemDetail handleVersionMismatch(TaskVersionMismatchException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.PRECONDITION_FAILED, exception.getMessage());
+		problem.setTitle("Task version mismatch");
+		problem.setProperty("expectedVersion", exception.getExpectedVersion());
+		problem.setProperty("actualVersion", exception.getActualVersion());
+		return problem;
+	}
+
+	@ExceptionHandler(InvalidTaskEtagException.class)
+	ProblemDetail handleInvalidEtag(InvalidTaskEtagException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+		problem.setTitle("Invalid If-Match header");
+		return problem;
+	}
 }

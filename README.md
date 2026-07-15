@@ -62,6 +62,18 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+낙관적 동시성 제어:
+
+```bash
+curl -i http://localhost:8080/api/v1/tasks/1
+curl -X PUT http://localhost:8080/api/v1/tasks/1 \
+  -H 'If-Match: "0"' \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"수정","description":null,"category":"TEST","priority":4,"dueDate":"2030-12-31"}'
+```
+
+단일 조회와 쓰기 응답은 현재 `version`의 강한 `ETag`를 반환합니다. `PUT`, 상태 변경, 삭제 요청에 `If-Match`를 보내면 버전이 다를 때 `412 Precondition Failed`로 거부합니다. 헤더를 생략한 기존 클라이언트 동작은 유지됩니다.
+
 요약 통계:
 
 ```bash

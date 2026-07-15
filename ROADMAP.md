@@ -31,7 +31,7 @@
 ## Phase 3 — Consistency and auditability
 
 - [ ] `DATA-001` 생성 API에 Idempotency-Key 처리를 추가한다.
-- [ ] `DATA-002` ETag와 If-Match 기반 낙관적 동시성 제어를 추가한다.
+- [x] `DATA-002` ETag와 If-Match 기반 낙관적 동시성 제어를 추가한다.
 - [ ] `DATA-003` 생성·수정·삭제 감사 로그를 별도 테이블에 기록한다.
 - [ ] `DATA-004` 감사 로그 보존 기간과 정리 작업을 추가한다.
 - [ ] `DATA-005` 도메인 이벤트용 transactional outbox를 구현한다.
