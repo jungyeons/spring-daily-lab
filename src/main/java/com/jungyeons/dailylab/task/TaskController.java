@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,9 +35,11 @@ import jakarta.validation.Valid;
 public class TaskController {
 
 	private final TaskService taskService;
+	private final TaskCsvExportService taskCsvExportService;
 
-	public TaskController(TaskService taskService) {
+	public TaskController(TaskService taskService, TaskCsvExportService taskCsvExportService) {
 		this.taskService = taskService;
+		this.taskCsvExportService = taskCsvExportService;
 	}
 
 	@PostMapping
@@ -60,6 +64,14 @@ public class TaskController {
 	@GetMapping("/summary")
 	public TaskSummaryResponse summary() {
 		return taskService.summary();
+	}
+
+	@GetMapping(value = "/exports/tasks.csv", produces = "text/csv")
+	public ResponseEntity<byte[]> exportCsv() {
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tasks.csv")
+				.contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+				.body(taskCsvExportService.export());
 	}
 
 	@GetMapping("/{id}")
