@@ -1,0 +1,1 @@
+ALTER TABLE growth_tasks ADD COLUMN archived_at TIMESTAMP WITH TIME ZONE;

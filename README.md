@@ -54,6 +54,16 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+완료 작업 보관 및 보관 해제:
+
+```bash
+curl -X PATCH http://localhost:8080/api/v1/tasks/1/archive
+curl -X PATCH http://localhost:8080/api/v1/tasks/1/unarchive
+curl 'http://localhost:8080/api/v1/tasks?archived=true'
+```
+
+보관은 완료된 작업에만 가능하며, 기본 목록과 요약 통계에서는 제외됩니다. 보관 목록은 `archived=true`으로 조회합니다.
+
 상태 변경:
 
 ```bash
@@ -73,10 +83,12 @@ curl http://localhost:8080/api/v1/tasks/summary
 | Method | Path | 설명 |
 | --- | --- | --- |
 | `POST` | `/api/v1/tasks` | 작업 생성 |
-| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류 필터 |
+| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류·보관 필터 |
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `PATCH` | `/api/v1/tasks/{id}/archive` | 완료 작업 보관 |
+| `PATCH` | `/api/v1/tasks/{id}/unarchive` | 작업 보관 해제 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 

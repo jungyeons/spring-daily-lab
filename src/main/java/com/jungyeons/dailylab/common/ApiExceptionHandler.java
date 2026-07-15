@@ -21,6 +21,13 @@ public class ApiExceptionHandler {
 		return problem;
 	}
 
+	@ExceptionHandler(TaskArchiveException.class)
+	ProblemDetail handleArchiveConflict(TaskArchiveException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+		problem.setTitle("Task archive conflict");
+		return problem;
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	ProblemDetail handleValidation(MethodArgumentNotValidException exception) {
 		Map<String, String> errors = new LinkedHashMap<>();

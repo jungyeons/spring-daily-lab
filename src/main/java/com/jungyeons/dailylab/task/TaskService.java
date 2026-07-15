@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,16 +41,22 @@ public class TaskService {
 
 	@Transactional(readOnly = true)
 	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, Pageable pageable) {
-		Page<GrowthTask> tasks;
-		if (status != null && category != null) {
-			tasks = taskRepository.findByStatusAndCategory(status, category, pageable);
-		} else if (status != null) {
-			tasks = taskRepository.findByStatus(status, pageable);
-		} else if (category != null) {
-			tasks = taskRepository.findByCategory(category, pageable);
-		} else {
-			tasks = taskRepository.findAll(pageable);
-		}
+		return findAll(status, category, false, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, boolean archived, Pageable pageable) {
+		Specification<GrowthTask> specification = (root, query, builder) -> {
+			var predicate = archived ? builder.isNotNull(root.get("archivedAt")) : builder.isNull(root.get("archivedAt"));
+			if (status != null) {
+				predicate = builder.and(predicate, builder.equal(root.get("status"), status));
+			}
+			if (category != null) {
+				predicate = builder.and(predicate, builder.equal(root.get("category"), category));
+			}
+			return predicate;
+		};
+		Page<GrowthTask> tasks = taskRepository.findAll(specification, pageable);
 		return tasks.map(TaskResponse::from);
 	}
 
@@ -76,6 +83,18 @@ public class TaskService {
 		return TaskResponse.from(task);
 	}
 
+	public TaskResponse archive(long id) {
+		GrowthTask task = getTask(id);
+		task.archive();
+		return TaskResponse.from(task);
+	}
+
+	public TaskResponse unarchive(long id) {
+		GrowthTask task = getTask(id);
+		task.unarchive();
+		return TaskResponse.from(task);
+	}
+
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
 		taskRepository.delete(task);
@@ -84,11 +103,11 @@ public class TaskService {
 	@Transactional(readOnly = true)
 	public TaskSummaryResponse summary() {
 		return new TaskSummaryResponse(
-				taskRepository.count(),
-				taskRepository.countByStatus(TaskStatus.TODO),
-				taskRepository.countByStatus(TaskStatus.IN_PROGRESS),
-				taskRepository.countByStatus(TaskStatus.DONE),
-				taskRepository.countByDueDateBeforeAndStatusNot(LocalDate.now(), TaskStatus.DONE)
+				taskRepository.countByArchivedAtIsNull(),
+				taskRepository.countByStatusAndArchivedAtIsNull(TaskStatus.TODO),
+				taskRepository.countByStatusAndArchivedAtIsNull(TaskStatus.IN_PROGRESS),
+				taskRepository.countByStatusAndArchivedAtIsNull(TaskStatus.DONE),
+				taskRepository.countByDueDateBeforeAndStatusNotAndArchivedAtIsNull(LocalDate.now(), TaskStatus.DONE)
 		);
 	}
 
