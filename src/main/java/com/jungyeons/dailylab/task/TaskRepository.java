@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.time.Instant;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,4 +22,8 @@ public interface TaskRepository extends JpaRepository<GrowthTask, Long> {
 	long countByStatus(TaskStatus status);
 
 	long countByDueDateBeforeAndStatusNot(LocalDate date, TaskStatus status);
+
+	long countByCompletedAtGreaterThanEqualAndCompletedAtLessThan(Instant start, Instant end);
+
+	long countByCreatedAtLessThanAndStatusNot(Instant end, TaskStatus status);
 }
