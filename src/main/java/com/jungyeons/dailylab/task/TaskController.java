@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.time.ZoneId;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
+import com.jungyeons.dailylab.task.api.MonthlyCategoryTrendResponse;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
@@ -33,9 +35,11 @@ import jakarta.validation.Valid;
 public class TaskController {
 
 	private final TaskService taskService;
+	private final TaskMonthlyTrendService taskMonthlyTrendService;
 
-	public TaskController(TaskService taskService) {
+	public TaskController(TaskService taskService, TaskMonthlyTrendService taskMonthlyTrendService) {
 		this.taskService = taskService;
+		this.taskMonthlyTrendService = taskMonthlyTrendService;
 	}
 
 	@PostMapping
@@ -60,6 +64,14 @@ public class TaskController {
 	@GetMapping("/summary")
 	public TaskSummaryResponse summary() {
 		return taskService.summary();
+	}
+
+	@GetMapping("/reports/monthly-trends")
+	public MonthlyCategoryTrendResponse monthlyTrends(
+			@RequestParam(defaultValue = "6") int months,
+			@RequestParam(defaultValue = "UTC") String zoneId
+	) {
+		return taskMonthlyTrendService.report(months, ZoneId.of(zoneId));
 	}
 
 	@GetMapping("/{id}")
