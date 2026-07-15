@@ -1,9 +1,12 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +15,7 @@ import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CursorPageResponse;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
@@ -51,6 +55,24 @@ public class TaskService {
 			tasks = taskRepository.findAll(pageable);
 		}
 		return tasks.map(TaskResponse::from);
+	}
+
+	@Transactional(readOnly = true)
+	public CursorPageResponse<TaskResponse> findNextPage(
+			TaskStatus status,
+			TaskCategory category,
+			long cursor,
+			int size
+	) {
+		Pageable limit = PageRequest.of(0, size + 1, Sort.by(Sort.Direction.ASC, "id"));
+		List<GrowthTask> fetched = findTasksAfterCursor(status, category, cursor, limit);
+		boolean hasNext = fetched.size() > size;
+		List<TaskResponse> items = fetched.stream()
+				.limit(size)
+				.map(TaskResponse::from)
+				.toList();
+		Long nextCursor = hasNext ? items.getLast().id() : null;
+		return new CursorPageResponse<>(items, nextCursor, hasNext);
 	}
 
 	@Transactional(readOnly = true)
@@ -94,5 +116,23 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private List<GrowthTask> findTasksAfterCursor(
+			TaskStatus status,
+			TaskCategory category,
+			long cursor,
+			Pageable limit
+	) {
+		if (status != null && category != null) {
+			return taskRepository.findByStatusAndCategoryAndIdGreaterThanOrderByIdAsc(status, category, cursor, limit);
+		}
+		if (status != null) {
+			return taskRepository.findByStatusAndIdGreaterThanOrderByIdAsc(status, cursor, limit);
+		}
+		if (category != null) {
+			return taskRepository.findByCategoryAndIdGreaterThanOrderByIdAsc(category, cursor, limit);
+		}
+		return taskRepository.findByIdGreaterThanOrderByIdAsc(cursor, limit);
 	}
 }

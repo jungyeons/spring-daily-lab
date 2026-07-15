@@ -54,6 +54,16 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+대규모 목록용 커서 페이지네이션(작업 ID 오름차순):
+
+```bash
+curl 'http://localhost:8080/api/v1/tasks/cursor?size=20'
+curl 'http://localhost:8080/api/v1/tasks/cursor?cursor=20&size=20'
+```
+
+응답의 `hasNext`가 `true`이면 `nextCursor`를 다음 요청의 `cursor`로 전달합니다. `status`와
+`category` 필터를 함께 사용할 수 있으며, 요청 사이에 추가되는 더 큰 ID의 작업은 이후 페이지에 포함됩니다.
+
 상태 변경:
 
 ```bash
@@ -74,6 +84,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | --- | --- | --- |
 | `POST` | `/api/v1/tasks` | 작업 생성 |
 | `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류 필터 |
+| `GET` | `/api/v1/tasks/cursor` | 커서 기반 목록 및 상태·분류 필터 |
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |

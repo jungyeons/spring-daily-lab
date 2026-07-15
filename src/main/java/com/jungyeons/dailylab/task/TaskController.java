@@ -21,15 +21,20 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CursorPageResponse;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
+@Validated
 public class TaskController {
 
 	private final TaskService taskService;
@@ -55,6 +60,16 @@ public class TaskController {
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
 		return taskService.findAll(status, category, pageable);
+	}
+
+	@GetMapping("/cursor")
+	public CursorPageResponse<TaskResponse> findNextPage(
+			@RequestParam(required = false) TaskStatus status,
+			@RequestParam(required = false) TaskCategory category,
+			@RequestParam(defaultValue = "0") @Min(0) long cursor,
+			@RequestParam(defaultValue = "20") @Min(1) @Max(100) int size
+	) {
+		return taskService.findNextPage(status, category, cursor, size);
 	}
 
 	@GetMapping("/summary")
