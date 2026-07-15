@@ -68,6 +68,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
 curl http://localhost:8080/api/v1/tasks/summary
 ```
 
+JSON 백업:
+
+```bash
+curl -OJ http://localhost:8080/api/v1/tasks/exports/backup.json
+```
+
+백업 최상위 객체에는 `schemaVersion`, `exportedAt`, `tasks`가 포함됩니다. 현재 스키마 버전은 `1`이며 이후 가져오기 기능은 이 값을 기준으로 호환성을 판단합니다.
+
 ## 엔드포인트
 
 | Method | Path | 설명 |
@@ -79,6 +87,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/tasks/exports/backup.json` | 스키마 버전을 포함한 JSON 백업 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
