@@ -32,6 +32,8 @@ PostgreSQL과 애플리케이션을 함께 실행하려면:
 docker compose up --build
 ```
 
+Kubernetes의 Deployment·Service·ConfigMap 예제와 적용 방법은 [Kubernetes 배포 문서](docs/kubernetes.md)를 참고하세요.
+
 ## API 예시
 
 작업 생성:
