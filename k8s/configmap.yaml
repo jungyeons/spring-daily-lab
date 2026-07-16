@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-daily-lab
+  labels:
+    app.kubernetes.io/name: spring-daily-lab
+    app.kubernetes.io/component: api
+data:
+  H2_CONSOLE_ENABLED: "false"
+  LOGGING_LEVEL_ROOT: INFO
