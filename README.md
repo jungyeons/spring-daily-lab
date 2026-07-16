@@ -1,5 +1,7 @@
 # Spring Daily Lab
 
+한국어 | [English](README.en.md)
+
 매일의 학습·개발 작업을 기록하고 상태와 마감일을 관리하는 Spring Boot REST API입니다. 작은 CRUD 예제에서 시작하지만, 운영 환경에서 필요한 보안·관측성·데이터 품질 기능을 점진적으로 확장할 수 있도록 구성했습니다.
 
 ## 기술 구성
@@ -114,6 +116,8 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 - 유효한 개선이 없으면 기여 수를 채우지 않고 종료합니다.
 
 구체적인 작업 규칙은 [AGENTS.md](AGENTS.md)에 있습니다.
+
+README 언어 동기화 규칙은 [docs/readme-sync.md](docs/readme-sync.md)에 있습니다.
 
 ## 라이선스
 
