@@ -103,6 +103,10 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
 
+## 아키텍처 결정
+
+장기간 유지되는 주요 설계 결정은 [ADR 목록](docs/adr/README.md)에 기록합니다.
+
 ## 기여 자동화 원칙
 
 매일 자동 작업은 [ROADMAP.md](ROADMAP.md)의 미완료 항목과 현재 이슈·PR을 검토하고, 서로 독립적인 실제 개선을 최대 10개까지 초안 PR로 제안합니다.
