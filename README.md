@@ -32,6 +32,14 @@ PostgreSQL과 애플리케이션을 함께 실행하려면:
 docker compose up --build
 ```
 
+운영 환경에서는 `ops` 프로필을 활성화해 콘솔 로그를 Elastic Common Schema(ECS) JSON으로 출력할 수 있습니다.
+
+```bash
+SPRING_PROFILES_ACTIVE=ops DEPLOYMENT_ENVIRONMENT=production ./gradlew bootRun
+```
+
+구조화 로그에는 애플리케이션 이름, 배포 환경, 로그 수준, logger, process/thread 정보와 MDC·SLF4J key-value 필드가 포함됩니다.
+
 ## API 예시
 
 작업 생성:
