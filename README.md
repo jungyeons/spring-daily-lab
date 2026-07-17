@@ -90,6 +90,16 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+## 알림 포트
+
+애플리케이션 코드는 `EmailNotificationPort`를 통해 이메일 전송 구현과 분리됩니다. 로컬 개발이나 자동화 테스트에서는 `local` 프로필을 활성화하면 외부 메일을 보내지 않고 전달 순서대로 메모리에 기록하는 fake adapter를 사용할 수 있습니다.
+
+```bash
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+```
+
+fake는 프로세스 메모리 전용이며 재시작하면 기록이 사라집니다. 운영 프로필에는 실제 전송 adapter를 별도로 구성해야 합니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
