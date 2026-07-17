@@ -90,6 +90,17 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+## 릴리스
+
+변경 내역은 [CHANGELOG.md](CHANGELOG.md)에서 관리합니다. 유지 관리자는 `vMAJOR.MINOR.PATCH` 형식의 주석 태그를 push해 릴리스를 만들 수 있습니다.
+
+```bash
+git tag -a v1.0.0 -m "v1.0.0"
+git push origin v1.0.0
+```
+
+릴리스 워크플로는 태그 형식을 검증한 뒤 GitHub Release와 자동 생성된 비교 노트를 만듭니다. 태그를 만들기 전에는 `CHANGELOG.md`의 Unreleased 항목을 해당 버전으로 옮깁니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
