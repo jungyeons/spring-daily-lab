@@ -90,6 +90,16 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+## 소프트웨어 구성 명세서(SBOM)
+
+CI는 CycloneDX JSON SBOM을 생성해 30일 동안 workflow artifact로 보관합니다. 로컬에서 같은 산출물을 만들려면 다음 명령을 실행합니다.
+
+```bash
+./gradlew cyclonedxBom --no-daemon
+```
+
+생성 파일은 `build/reports/cyclonedx/application.cdx.json`입니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
