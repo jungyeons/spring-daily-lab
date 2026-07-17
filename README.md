@@ -90,6 +90,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+의존성 정의나 CI 구성이 바뀌는 pull request에서는 Dependency Review가 새 runtime 의존성의 알려진 취약점을 검사합니다. 중간(moderate) 이상 심각도의 새 취약점은 병합 전에 해결하거나 명시적으로 검토해야 합니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
