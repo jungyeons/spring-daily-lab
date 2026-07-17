@@ -100,8 +100,11 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 | `DB_USERNAME` | `sa` |
 | `DB_PASSWORD` | 빈 값 |
 | `H2_CONSOLE_ENABLED` | `true` |
+| `CORS_ALLOWED_ORIGINS` | 빈 값(교차 출처 요청 차단) |
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
+
+`CORS_ALLOWED_ORIGINS`는 쉼표로 구분한 정확한 origin 목록만 허용합니다(예: `https://app.example.com,https://admin.example.com`). 와일드카드 `*`는 시작 시 거부하며 credential 공유는 활성화하지 않습니다.
 
 ## 기여 자동화 원칙
 

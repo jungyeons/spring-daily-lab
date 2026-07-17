@@ -42,3 +42,7 @@ info:
   app:
     name: Spring Daily Lab
     description: Daily growth task management API
+
+app:
+  cors:
+    allowed-origins: "${CORS_ALLOWED_ORIGINS:}"
