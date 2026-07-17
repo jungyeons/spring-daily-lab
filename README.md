@@ -90,6 +90,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+애플리케이션 종료 시 새 요청을 중단하고 진행 중 요청을 최대 20초 동안 기다리는 graceful shutdown이 활성화되어 있습니다. 통합 테스트는 실제 HTTP 요청이 처리 중인 상태에서 서버 종료를 시작해 응답이 완료된 뒤에만 종료되는지 검증합니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
