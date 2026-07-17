@@ -65,7 +65,7 @@
 - [ ] `OPS-007` 서명된 webhook 전송과 재시도 정책을 추가한다.
 - [ ] `OPS-008` 다중 인스턴스 스케줄러 락을 추가한다.
 - [ ] `OPS-009` graceful shutdown 통합 테스트를 추가한다.
-- [ ] `OPS-010` Docker Compose 장애 진단·복구 runbook을 작성한다.
+- [x] `OPS-010` Docker Compose 장애 진단·복구 runbook을 작성한다.
 
 ## Phase 6 — Delivery and documentation
 

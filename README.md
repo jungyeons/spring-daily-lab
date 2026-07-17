@@ -32,6 +32,8 @@ PostgreSQL과 애플리케이션을 함께 실행하려면:
 docker compose up --build
 ```
 
+문제 진단과 안전한 복구 절차는 [Docker Compose 장애 진단·복구 runbook](docs/runbooks/docker-compose-recovery.md)을 참고하세요. 데이터 볼륨을 삭제하는 명령은 검증된 백업이 있을 때만 사용합니다.
+
 ## API 예시
 
 작업 생성:
