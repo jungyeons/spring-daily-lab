@@ -24,6 +24,8 @@
 
 - API: `http://localhost:8080/api/v1/tasks`
 - 상태 확인: `http://localhost:8080/actuator/health`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 - H2 콘솔: `http://localhost:8080/h2-console`
 
 PostgreSQL과 애플리케이션을 함께 실행하려면:
@@ -81,6 +83,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
+
+OpenAPI 스키마와 대화형 문서는 Swagger UI에서 확인할 수 있습니다. 대표 요청·응답은 [OpenAPI 예시](docs/openapi-examples.md)에 정리했습니다.
 
 ## 검증
 
