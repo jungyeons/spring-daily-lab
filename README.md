@@ -82,6 +82,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
+API와 Actuator 응답은 브라우저 추론·프레임 삽입·referrer·민감 기능 사용을 제한하는 보안 헤더와 `no-store` 캐시 정책을 적용합니다. HSTS는 HTTPS 요청에서만 전송하므로 로컬 HTTP 개발에는 적용되지 않습니다. H2 콘솔과 정적 리소스는 별도 UI 정책을 유지할 수 있도록 필터 범위에서 제외합니다.
+
 ## 검증
 
 ```bash
