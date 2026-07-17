@@ -1,0 +1,7 @@
+logging:
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        environment: "${DEPLOYMENT_ENVIRONMENT:production}"
