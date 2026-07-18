@@ -22,9 +22,11 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskMetrics taskMetrics;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskMetrics taskMetrics) {
 		this.taskRepository = taskRepository;
+		this.taskMetrics = taskMetrics;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -35,7 +37,9 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
-		return TaskResponse.from(taskRepository.save(task));
+		TaskResponse created = TaskResponse.from(taskRepository.save(task));
+		taskMetrics.recordCreated(created.category());
+		return created;
 	}
 
 	@Transactional(readOnly = true)
@@ -72,7 +76,11 @@ public class TaskService {
 
 	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request) {
 		GrowthTask task = getTask(id);
+		TaskStatus previousStatus = task.getStatus();
 		task.changeStatus(request.status());
+		if (previousStatus != TaskStatus.DONE && request.status() == TaskStatus.DONE) {
+			taskMetrics.recordCompleted(task.getCategory());
+		}
 		return TaskResponse.from(task);
 	}
 
