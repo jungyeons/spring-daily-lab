@@ -2,7 +2,9 @@ package com.jungyeons.dailylab.domain;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +13,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -50,6 +55,14 @@ public class GrowthTask {
 	private Instant updatedAt;
 
 	private Instant completedAt;
+
+	@ManyToMany
+	@JoinTable(
+			name = "growth_task_tags",
+			joinColumns = @JoinColumn(name = "task_id"),
+			inverseJoinColumns = @JoinColumn(name = "tag_id")
+	)
+	private Set<TaskTag> tags = new LinkedHashSet<>();
 
 	@Version
 	@Column(nullable = false)
@@ -98,6 +111,10 @@ public class GrowthTask {
 
 	public boolean isOverdue(LocalDate today) {
 		return dueDate != null && dueDate.isBefore(today) && status != TaskStatus.DONE;
+	}
+
+	public void setTags(Set<TaskTag> tags) {
+		this.tags = new LinkedHashSet<>(Objects.requireNonNull(tags, "tags must not be null"));
 	}
 
 	@PrePersist
@@ -168,6 +185,10 @@ public class GrowthTask {
 
 	public Instant getCompletedAt() {
 		return completedAt;
+	}
+
+	public Set<TaskTag> getTags() {
+		return Set.copyOf(tags);
 	}
 
 	public long getVersion() {

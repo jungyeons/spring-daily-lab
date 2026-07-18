@@ -2,6 +2,8 @@ package com.jungyeons.dailylab.task.api;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
@@ -18,7 +20,8 @@ public record TaskResponse(
 		Instant createdAt,
 		Instant updatedAt,
 		Instant completedAt,
-		long version
+		long version,
+		Set<String> tags
 ) {
 	public static TaskResponse from(GrowthTask task) {
 		return new TaskResponse(
@@ -30,9 +33,10 @@ public record TaskResponse(
 				task.getPriority(),
 				task.getDueDate(),
 				task.getCreatedAt(),
-				task.getUpdatedAt(),
-				task.getCompletedAt(),
-				task.getVersion()
+			task.getUpdatedAt(),
+			task.getCompletedAt(),
+			task.getVersion(),
+			task.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toUnmodifiableSet())
 		);
 	}
 }

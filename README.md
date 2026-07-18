@@ -44,14 +44,15 @@ curl -i http://localhost:8080/api/v1/tasks \
     "description": "상태 전이와 통계를 검증한다",
     "category": "TEST",
     "priority": 4,
-    "dueDate": "2030-12-31"
+    "dueDate": "2030-12-31",
+    "tags": ["api", "testing"]
   }'
 ```
 
 목록과 필터:
 
 ```bash
-curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
+curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&tag=testing&page=0&size=20'
 ```
 
 상태 변경:
@@ -73,7 +74,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | Method | Path | 설명 |
 | --- | --- | --- |
 | `POST` | `/api/v1/tasks` | 작업 생성 |
-| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류 필터 |
+| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류·태그 필터 |
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |

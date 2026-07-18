@@ -1,6 +1,11 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +16,7 @@ import com.jungyeons.dailylab.common.TaskNotFoundException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
+import com.jungyeons.dailylab.domain.TaskTag;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
@@ -22,9 +28,11 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskTagRepository taskTagRepository;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskTagRepository taskTagRepository) {
 		this.taskRepository = taskRepository;
+		this.taskTagRepository = taskTagRepository;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -35,22 +43,14 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		setTags(task, request.tags());
 		return TaskResponse.from(taskRepository.save(task));
 	}
 
 	@Transactional(readOnly = true)
-	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, Pageable pageable) {
-		Page<GrowthTask> tasks;
-		if (status != null && category != null) {
-			tasks = taskRepository.findByStatusAndCategory(status, category, pageable);
-		} else if (status != null) {
-			tasks = taskRepository.findByStatus(status, pageable);
-		} else if (category != null) {
-			tasks = taskRepository.findByCategory(category, pageable);
-		} else {
-			tasks = taskRepository.findAll(pageable);
-		}
-		return tasks.map(TaskResponse::from);
+	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, String tag, Pageable pageable) {
+		String tagName = tag == null || tag.isBlank() ? null : TaskTag.normalizeName(tag);
+		return taskRepository.findByFilters(status, category, tagName, pageable).map(TaskResponse::from);
 	}
 
 	@Transactional(readOnly = true)
@@ -67,6 +67,7 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		setTags(task, request.tags());
 		return TaskResponse.from(task);
 	}
 
@@ -94,5 +95,26 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private void setTags(GrowthTask task, Collection<String> requestedTags) {
+		Set<String> normalizedNames = normalizeTagNames(requestedTags);
+		Map<String, TaskTag> tagsByName = new LinkedHashMap<>();
+		taskTagRepository.findByNameIn(normalizedNames).forEach(tag -> tagsByName.put(tag.getName(), tag));
+		for (String name : normalizedNames) {
+			tagsByName.computeIfAbsent(name, ignored -> taskTagRepository.save(TaskTag.create(name)));
+		}
+		task.setTags(new LinkedHashSet<>(tagsByName.values()));
+	}
+
+	private Set<String> normalizeTagNames(Collection<String> tags) {
+		if (tags == null || tags.isEmpty()) {
+			return Set.of();
+		}
+		Set<String> normalizedNames = new LinkedHashSet<>();
+		for (String tag : tags) {
+			normalizedNames.add(TaskTag.normalizeName(tag));
+		}
+		return normalizedNames;
 	}
 }
