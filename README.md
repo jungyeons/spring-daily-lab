@@ -26,6 +26,8 @@
 - 상태 확인: `http://localhost:8080/actuator/health`
 - H2 콘솔: `http://localhost:8080/h2-console`
 
+Actuator 메트릭에는 분류별 `dailylab.tasks.created`, `dailylab.tasks.completed` 카운터와 현재 기한 초과 미완료 작업 수를 나타내는 `dailylab.tasks.overdue` 게이지가 포함됩니다.
+
 PostgreSQL과 애플리케이션을 함께 실행하려면:
 
 ```bash
