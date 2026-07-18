@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task.api;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 
@@ -16,6 +17,7 @@ public record CreateTaskRequest(
 		@Size(max = 2000) String description,
 		@NotNull TaskCategory category,
 		@NotNull @Min(1) @Max(5) Integer priority,
-		@FutureOrPresent LocalDate dueDate
+		@FutureOrPresent LocalDate dueDate,
+		@Size(max = 10) Set<@NotBlank @Size(max = 40) String> tags
 ) {
 }
