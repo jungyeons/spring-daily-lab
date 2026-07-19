@@ -12,19 +12,27 @@ import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CreateTaskProgressRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
+import com.jungyeons.dailylab.task.api.TaskProgressResponse;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
+import com.jungyeons.dailylab.task.progress.TaskProgressEntry;
+import com.jungyeons.dailylab.task.progress.TaskProgressEntryRepository;
+
+import java.util.List;
 
 @Service
 @Transactional
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskProgressEntryRepository taskProgressEntryRepository;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskProgressEntryRepository taskProgressEntryRepository) {
 		this.taskRepository = taskRepository;
+		this.taskProgressEntryRepository = taskProgressEntryRepository;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -79,6 +87,20 @@ public class TaskService {
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
 		taskRepository.delete(task);
+	}
+
+	public TaskProgressResponse recordProgress(long taskId, CreateTaskProgressRequest request) {
+		getTask(taskId);
+		TaskProgressEntry entry = TaskProgressEntry.create(taskId, request.percent(), request.note());
+		return TaskProgressResponse.from(taskProgressEntryRepository.save(entry));
+	}
+
+	@Transactional(readOnly = true)
+	public List<TaskProgressResponse> progressTimeline(long taskId) {
+		getTask(taskId);
+		return taskProgressEntryRepository.findByTaskIdOrderByRecordedAtDescIdDesc(taskId).stream()
+				.map(TaskProgressResponse::from)
+				.toList();
 	}
 
 	@Transactional(readOnly = true)
