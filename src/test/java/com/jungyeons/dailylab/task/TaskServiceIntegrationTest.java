@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CreateTaskProgressRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 
@@ -27,8 +28,12 @@ class TaskServiceIntegrationTest {
 	@Autowired
 	private TaskRepository taskRepository;
 
+	@Autowired
+	private com.jungyeons.dailylab.task.progress.TaskProgressEntryRepository taskProgressEntryRepository;
+
 	@BeforeEach
 	void clearDatabase() {
+		taskProgressEntryRepository.deleteAll();
 		taskRepository.deleteAll();
 	}
 
@@ -57,5 +62,19 @@ class TaskServiceIntegrationTest {
 		assertThat(completed.completedAt()).isNotNull();
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
+	}
+
+	@Test
+	void recordsAndReturnsProgressTimelineNewestFirst() {
+		TaskResponse task = taskService.create(new CreateTaskRequest(
+				"Ship progress timeline", null, TaskCategory.FEATURE, 3, null
+		));
+
+		taskService.recordProgress(task.id(), new CreateTaskProgressRequest(25, "First step"));
+		taskService.recordProgress(task.id(), new CreateTaskProgressRequest(60, "More than halfway"));
+
+		assertThat(taskService.progressTimeline(task.id()))
+				.extracting(progress -> progress.percent())
+				.containsExactly(60, 25);
 	}
 }

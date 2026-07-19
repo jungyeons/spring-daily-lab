@@ -21,7 +21,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CreateTaskProgressRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
+import com.jungyeons.dailylab.task.api.TaskProgressResponse;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
@@ -78,6 +80,24 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PostMapping("/{id}/progress")
+	public ResponseEntity<TaskProgressResponse> recordProgress(
+			@PathVariable long id,
+			@Valid @RequestBody CreateTaskProgressRequest request
+	) {
+		TaskProgressResponse created = taskService.recordProgress(id, request);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+				.path("/{entryId}")
+				.buildAndExpand(created.id())
+				.toUri();
+		return ResponseEntity.created(location).body(created);
+	}
+
+	@GetMapping("/{id}/progress")
+	public java.util.List<TaskProgressResponse> progressTimeline(@PathVariable long id) {
+		return taskService.progressTimeline(id);
 	}
 
 	@DeleteMapping("/{id}")

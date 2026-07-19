@@ -62,6 +62,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+진행 기록 추가:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/tasks/1/progress \
+  -H 'Content-Type: application/json' \
+  -d '{"percent": 60, "note": "핵심 구현을 마쳤다"}'
+```
+
 요약 통계:
 
 ```bash
@@ -77,6 +85,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `POST` | `/api/v1/tasks/{id}/progress` | 진행률과 메모 기록 |
+| `GET` | `/api/v1/tasks/{id}/progress` | 최신순 진행 타임라인 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
