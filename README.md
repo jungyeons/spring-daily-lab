@@ -24,6 +24,7 @@
 
 - API: `http://localhost:8080/api/v1/tasks`
 - 상태 확인: `http://localhost:8080/actuator/health`
+- Prometheus 스크레이프: `http://localhost:8080/actuator/prometheus`
 - H2 콘솔: `http://localhost:8080/h2-console`
 
 PostgreSQL과 애플리케이션을 함께 실행하려면:
