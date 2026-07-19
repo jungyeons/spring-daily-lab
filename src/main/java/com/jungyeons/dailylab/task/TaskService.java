@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jungyeons.dailylab.audit.TaskAuditAction;
+import com.jungyeons.dailylab.audit.TaskAuditLog;
+import com.jungyeons.dailylab.audit.TaskAuditLogRepository;
 import com.jungyeons.dailylab.common.TaskNotFoundException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
@@ -22,9 +25,11 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskAuditLogRepository taskAuditLogRepository;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskAuditLogRepository taskAuditLogRepository) {
 		this.taskRepository = taskRepository;
+		this.taskAuditLogRepository = taskAuditLogRepository;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -35,7 +40,9 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
-		return TaskResponse.from(taskRepository.save(task));
+		GrowthTask saved = taskRepository.save(task);
+		recordAudit(saved, TaskAuditAction.CREATE);
+		return TaskResponse.from(saved);
 	}
 
 	@Transactional(readOnly = true)
@@ -67,17 +74,20 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		recordAudit(task, TaskAuditAction.UPDATE);
 		return TaskResponse.from(task);
 	}
 
 	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request) {
 		GrowthTask task = getTask(id);
 		task.changeStatus(request.status());
+		recordAudit(task, TaskAuditAction.STATUS_CHANGE);
 		return TaskResponse.from(task);
 	}
 
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
+		recordAudit(task, TaskAuditAction.DELETE);
 		taskRepository.delete(task);
 	}
 
@@ -94,5 +104,9 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private void recordAudit(GrowthTask task, TaskAuditAction action) {
+		taskAuditLogRepository.save(TaskAuditLog.capture(task, action));
 	}
 }
