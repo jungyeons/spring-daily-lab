@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,19 +13,26 @@ import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CreateTaskTimeEntryRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
+import com.jungyeons.dailylab.task.api.TaskTimeEntryResponse;
+import com.jungyeons.dailylab.task.api.TaskTimeSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
+import com.jungyeons.dailylab.task.time.TaskTimeEntry;
+import com.jungyeons.dailylab.task.time.TaskTimeEntryRepository;
 
 @Service
 @Transactional
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskTimeEntryRepository taskTimeEntryRepository;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskTimeEntryRepository taskTimeEntryRepository) {
 		this.taskRepository = taskRepository;
+		this.taskTimeEntryRepository = taskTimeEntryRepository;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -79,6 +87,26 @@ public class TaskService {
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
 		taskRepository.delete(task);
+	}
+
+	public TaskTimeEntryResponse recordTime(long taskId, CreateTaskTimeEntryRequest request) {
+		getTask(taskId);
+		TaskTimeEntry entry = TaskTimeEntry.create(taskId, request.durationMinutes(), request.note());
+		return TaskTimeEntryResponse.from(taskTimeEntryRepository.save(entry));
+	}
+
+	@Transactional(readOnly = true)
+	public TaskTimeSummaryResponse timeSummary(long taskId) {
+		getTask(taskId);
+		List<TaskTimeEntryResponse> entries = taskTimeEntryRepository
+				.findByTaskIdOrderByRecordedAtDescIdDesc(taskId).stream()
+				.map(TaskTimeEntryResponse::from)
+				.toList();
+		return new TaskTimeSummaryResponse(
+				taskId,
+				taskTimeEntryRepository.sumDurationMinutesByTaskId(taskId),
+				entries
+		);
 	}
 
 	@Transactional(readOnly = true)
