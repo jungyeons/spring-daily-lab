@@ -11,11 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jungyeons.dailylab.audit.TaskAuditAction;
+import com.jungyeons.dailylab.audit.TaskAuditLogRepository;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
+import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 @SpringBootTest
 @Transactional
@@ -27,8 +30,12 @@ class TaskServiceIntegrationTest {
 	@Autowired
 	private TaskRepository taskRepository;
 
+	@Autowired
+	private TaskAuditLogRepository taskAuditLogRepository;
+
 	@BeforeEach
 	void clearDatabase() {
+		taskAuditLogRepository.deleteAll();
 		taskRepository.deleteAll();
 	}
 
@@ -57,5 +64,30 @@ class TaskServiceIntegrationTest {
 		assertThat(completed.completedAt()).isNotNull();
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
+	}
+
+	@Test
+	void recordsTaskLifecycleSnapshotsInSeparateAuditTable() {
+		TaskResponse task = taskService.create(new CreateTaskRequest(
+				"Create audit trail", "Initial", TaskCategory.FEATURE, 3, null
+		));
+
+		taskService.update(task.id(), new UpdateTaskRequest(
+				"Create durable audit trail", "Updated", TaskCategory.REFACTOR, 4, null
+		));
+		taskService.changeStatus(task.id(), new ChangeTaskStatusRequest(TaskStatus.DONE));
+		taskService.delete(task.id());
+
+		var auditLogs = taskAuditLogRepository.findByTaskIdOrderByIdAsc(task.id());
+		assertThat(auditLogs)
+				.extracting(log -> log.getAction())
+				.containsExactly(
+						TaskAuditAction.CREATE,
+						TaskAuditAction.UPDATE,
+						TaskAuditAction.STATUS_CHANGE,
+						TaskAuditAction.DELETE
+				);
+		assertThat(auditLogs.get(1).getTitle()).isEqualTo("Create durable audit trail");
+		assertThat(auditLogs.get(2).getStatus()).isEqualTo(TaskStatus.DONE);
 	}
 }
