@@ -56,7 +56,7 @@
 
 ## Phase 5 — Operations and observability
 
-- [ ] `OPS-001` Prometheus 메트릭 레지스트리와 scrape 엔드포인트를 추가한다.
+- [x] `OPS-001` Prometheus 메트릭 레지스트리와 scrape 엔드포인트를 추가한다.
 - [ ] `OPS-002` 요청 correlation ID 생성·전파와 로그 연결을 추가한다.
 - [ ] `OPS-003` JSON 구조화 로그 운영 프로필을 추가한다.
 - [ ] `OPS-004` liveness·readiness 그룹과 데이터베이스 준비 상태를 검증한다.

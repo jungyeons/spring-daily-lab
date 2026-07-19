@@ -25,10 +25,18 @@ server:
   shutdown: graceful
 
 management:
+  defaults:
+    metrics:
+      export:
+        enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       probes:
