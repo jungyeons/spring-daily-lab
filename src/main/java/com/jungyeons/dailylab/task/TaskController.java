@@ -21,9 +21,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.CreateTaskTimeEntryRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
+import com.jungyeons.dailylab.task.api.TaskTimeEntryResponse;
+import com.jungyeons.dailylab.task.api.TaskTimeSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 import jakarta.validation.Valid;
@@ -78,6 +81,24 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PostMapping("/{id}/time-entries")
+	public ResponseEntity<TaskTimeEntryResponse> recordTime(
+			@PathVariable long id,
+			@Valid @RequestBody CreateTaskTimeEntryRequest request
+	) {
+		TaskTimeEntryResponse created = taskService.recordTime(id, request);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+				.path("/{entryId}")
+				.buildAndExpand(created.id())
+				.toUri();
+		return ResponseEntity.created(location).body(created);
+	}
+
+	@GetMapping("/{id}/time-entries")
+	public TaskTimeSummaryResponse timeSummary(@PathVariable long id) {
+		return taskService.timeSummary(id);
 	}
 
 	@DeleteMapping("/{id}")

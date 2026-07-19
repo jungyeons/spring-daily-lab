@@ -62,6 +62,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+실제 소요 시간 기록:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/tasks/1/time-entries \
+  -H 'Content-Type: application/json' \
+  -d '{"durationMinutes": 45, "note": "통합 테스트 작성"}'
+```
+
 요약 통계:
 
 ```bash
@@ -77,6 +85,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `POST` | `/api/v1/tasks/{id}/time-entries` | 실제 소요 시간 기록 |
+| `GET` | `/api/v1/tasks/{id}/time-entries` | 기록 목록과 누적 시간 조회 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
