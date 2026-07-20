@@ -48,6 +48,15 @@ curl -i http://localhost:8080/api/v1/tasks \
   }'
 ```
 
+네트워크 재시도로 인한 중복 생성을 방지하려면 요청마다 고유한 `Idempotency-Key`를 보냅니다. 같은 키와 같은 본문을 다시 보내면 처음 생성한 작업을 반환하며, 같은 키를 다른 본문에 사용하면 `400 Bad Request`를 반환합니다.
+
+```bash
+curl -i http://localhost:8080/api/v1/tasks \
+  -H 'Content-Type: application/json' \
+  -H 'Idempotency-Key: 3f4498d3-8d64-43b5-a90a-cae8d8559780' \
+  -d '{"title":"서비스 테스트 추가","category":"TEST","priority":4}'
+```
+
 목록과 필터:
 
 ```bash
@@ -72,7 +81,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 | Method | Path | 설명 |
 | --- | --- | --- |
-| `POST` | `/api/v1/tasks` | 작업 생성 |
+| `POST` | `/api/v1/tasks` | 작업 생성 (`Idempotency-Key` 선택 지원) |
 | `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류 필터 |
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |

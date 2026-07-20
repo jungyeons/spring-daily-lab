@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
+import com.jungyeons.dailylab.common.IdempotencyKeyConflictException;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
@@ -57,5 +58,30 @@ class TaskServiceIntegrationTest {
 		assertThat(completed.completedAt()).isNotNull();
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
+	}
+
+	@Test
+	void replaysTaskCreationForTheSameIdempotencyKey() {
+		CreateTaskRequest request = new CreateTaskRequest(
+				"Create only once", "Retry-safe", TaskCategory.FEATURE, 3, LocalDate.now().plusDays(1)
+		);
+
+		TaskResponse first = taskService.create(request, "create-task-1");
+		TaskResponse replay = taskService.create(request, "create-task-1");
+
+		assertThat(replay.id()).isEqualTo(first.id());
+		assertThat(taskRepository.count()).isOne();
+	}
+
+	@Test
+	void rejectsReusingAnIdempotencyKeyForADifferentRequest() {
+		taskService.create(new CreateTaskRequest(
+				"First request", null, TaskCategory.FEATURE, 3, null
+		), "create-task-2");
+
+		org.assertj.core.api.Assertions.assertThatThrownBy(() -> taskService.create(new CreateTaskRequest(
+				"Changed request", null, TaskCategory.FEATURE, 3, null
+		), "create-task-2"))
+				.isInstanceOf(IdempotencyKeyConflictException.class);
 	}
 }

@@ -55,4 +55,11 @@ public class ApiExceptionHandler {
 		problem.setTitle("Concurrent update conflict");
 		return problem;
 	}
+
+	@ExceptionHandler({ IdempotencyKeyConflictException.class, IllegalArgumentException.class })
+	ProblemDetail handleBadRequest(RuntimeException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+		problem.setTitle("Invalid request");
+		return problem;
+	}
 }
