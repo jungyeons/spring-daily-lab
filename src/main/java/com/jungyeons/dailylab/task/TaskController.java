@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,6 +79,22 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PutMapping("/{id}/dependencies/{prerequisiteId}")
+	public TaskResponse addPrerequisite(@PathVariable long id, @PathVariable long prerequisiteId) {
+		return taskService.addPrerequisite(id, prerequisiteId);
+	}
+
+	@DeleteMapping("/{id}/dependencies/{prerequisiteId}")
+	public ResponseEntity<Void> removePrerequisite(@PathVariable long id, @PathVariable long prerequisiteId) {
+		taskService.removePrerequisite(id, prerequisiteId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/{id}/dependencies")
+	public List<TaskResponse> findPrerequisites(@PathVariable long id) {
+		return taskService.findPrerequisites(id);
 	}
 
 	@DeleteMapping("/{id}")

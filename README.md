@@ -62,6 +62,14 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+선행 작업 추가와 조회:
+
+```bash
+curl -X PUT http://localhost:8080/api/v1/tasks/2/dependencies/1
+curl http://localhost:8080/api/v1/tasks/2/dependencies
+curl -X DELETE http://localhost:8080/api/v1/tasks/2/dependencies/1
+```
+
 요약 통계:
 
 ```bash
@@ -77,6 +85,9 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `PUT` | `/api/v1/tasks/{id}/dependencies/{prerequisiteId}` | 선행 작업 추가 |
+| `GET` | `/api/v1/tasks/{id}/dependencies` | 선행 작업 목록 조회 |
+| `DELETE` | `/api/v1/tasks/{id}/dependencies/{prerequisiteId}` | 선행 작업 제거 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 

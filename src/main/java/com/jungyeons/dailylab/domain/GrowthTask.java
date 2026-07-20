@@ -3,6 +3,8 @@ package com.jungyeons.dailylab.domain;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +13,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -50,6 +55,14 @@ public class GrowthTask {
 	private Instant updatedAt;
 
 	private Instant completedAt;
+
+	@ManyToMany
+	@JoinTable(
+			name = "task_dependencies",
+			joinColumns = @JoinColumn(name = "task_id"),
+			inverseJoinColumns = @JoinColumn(name = "depends_on_task_id")
+	)
+	private Set<GrowthTask> prerequisites = new LinkedHashSet<>();
 
 	@Version
 	@Column(nullable = false)
@@ -94,6 +107,17 @@ public class GrowthTask {
 	public void changeStatus(TaskStatus newStatus) {
 		this.status = Objects.requireNonNull(newStatus, "status must not be null");
 		this.completedAt = newStatus == TaskStatus.DONE ? Instant.now() : null;
+	}
+
+	public void addPrerequisite(GrowthTask prerequisite) {
+		if (this == prerequisite || Objects.equals(id, prerequisite.getId())) {
+			throw new IllegalArgumentException("a task cannot depend on itself");
+		}
+		prerequisites.add(Objects.requireNonNull(prerequisite, "prerequisite must not be null"));
+	}
+
+	public void removePrerequisite(GrowthTask prerequisite) {
+		prerequisites.remove(prerequisite);
 	}
 
 	public boolean isOverdue(LocalDate today) {
@@ -168,6 +192,10 @@ public class GrowthTask {
 
 	public Instant getCompletedAt() {
 		return completedAt;
+	}
+
+	public Set<GrowthTask> getPrerequisites() {
+		return Set.copyOf(prerequisites);
 	}
 
 	public long getVersion() {

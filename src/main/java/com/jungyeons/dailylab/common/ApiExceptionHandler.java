@@ -55,4 +55,11 @@ public class ApiExceptionHandler {
 		problem.setTitle("Concurrent update conflict");
 		return problem;
 	}
+
+	@ExceptionHandler({ TaskDependencyCycleException.class, IllegalArgumentException.class })
+	ProblemDetail handleDependencyConflict(RuntimeException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+		problem.setTitle("Invalid task dependency");
+		return problem;
+	}
 }
