@@ -1,5 +1,8 @@
 package com.jungyeons.dailylab.task;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
@@ -7,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jungyeons.dailylab.common.IdempotencyKeyConflictException;
 import com.jungyeons.dailylab.common.TaskNotFoundException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
@@ -22,12 +26,32 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final TaskCreationIdempotencyRepository idempotencyRepository;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, TaskCreationIdempotencyRepository idempotencyRepository) {
 		this.taskRepository = taskRepository;
+		this.idempotencyRepository = idempotencyRepository;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
+		return create(request, null);
+	}
+
+	public TaskResponse create(CreateTaskRequest request, String idempotencyKey) {
+		if (idempotencyKey == null || idempotencyKey.isBlank()) {
+			return createTask(request);
+		}
+		if (idempotencyKey.length() > 128) {
+			throw new IllegalArgumentException("Idempotency-Key must be at most 128 characters");
+		}
+
+		String fingerprint = requestFingerprint(request);
+		return idempotencyRepository.findById(idempotencyKey)
+				.map(record -> replayOrReject(record, fingerprint))
+				.orElseGet(() -> createTaskWithIdempotencyKey(request, idempotencyKey, fingerprint));
+	}
+
+	private TaskResponse createTask(CreateTaskRequest request) {
 		GrowthTask task = GrowthTask.create(
 				request.title(),
 				request.description(),
@@ -36,6 +60,41 @@ public class TaskService {
 				request.dueDate()
 		);
 		return TaskResponse.from(taskRepository.save(task));
+	}
+
+	private TaskResponse createTaskWithIdempotencyKey(
+			CreateTaskRequest request, String idempotencyKey, String fingerprint
+	) {
+		TaskResponse created = createTask(request);
+		idempotencyRepository.save(new TaskCreationIdempotency(idempotencyKey, fingerprint, created.id()));
+		return created;
+	}
+
+	private TaskResponse replayOrReject(TaskCreationIdempotency record, String fingerprint) {
+		if (!record.matches(fingerprint)) {
+			throw new IdempotencyKeyConflictException();
+		}
+		return TaskResponse.from(getTask(record.getTaskId()));
+	}
+
+	private String requestFingerprint(CreateTaskRequest request) {
+		StringBuilder input = new StringBuilder();
+		appendFingerprintField(input, request.title());
+		appendFingerprintField(input, request.description());
+		appendFingerprintField(input, request.category());
+		appendFingerprintField(input, request.priority());
+		appendFingerprintField(input, request.dueDate());
+		try {
+			byte[] digest = MessageDigest.getInstance("SHA-256").digest(input.toString().getBytes(StandardCharsets.UTF_8));
+			return java.util.HexFormat.of().formatHex(digest);
+		} catch (NoSuchAlgorithmException exception) {
+			throw new IllegalStateException("SHA-256 is unavailable", exception);
+		}
+	}
+
+	private void appendFingerprintField(StringBuilder input, Object value) {
+		String text = value == null ? "<null>" : value.toString();
+		input.append(text.length()).append(':').append(text);
 	}
 
 	@Transactional(readOnly = true)
