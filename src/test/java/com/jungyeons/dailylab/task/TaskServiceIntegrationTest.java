@@ -1,6 +1,7 @@
 package com.jungyeons.dailylab.task;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
+import com.jungyeons.dailylab.common.TaskDependencyCycleException;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
@@ -57,5 +59,26 @@ class TaskServiceIntegrationTest {
 		assertThat(completed.completedAt()).isNotNull();
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
+	}
+
+	@Test
+	void modelsPrerequisitesAndRejectsCircularDependencies() {
+		TaskResponse design = createTask("Design API");
+		TaskResponse implementation = createTask("Implement API");
+		TaskResponse documentation = createTask("Document API");
+
+		TaskResponse updated = taskService.addPrerequisite(implementation.id(), design.id());
+		taskService.addPrerequisite(documentation.id(), implementation.id());
+
+		assertThat(updated.prerequisiteIds()).containsExactly(design.id());
+		assertThat(taskService.findPrerequisites(documentation.id()))
+				.extracting(TaskResponse::id)
+				.containsExactly(implementation.id());
+		assertThatThrownBy(() -> taskService.addPrerequisite(design.id(), documentation.id()))
+				.isInstanceOf(TaskDependencyCycleException.class);
+	}
+
+	private TaskResponse createTask(String title) {
+		return taskService.create(new CreateTaskRequest(title, null, TaskCategory.FEATURE, 3, null));
 	}
 }

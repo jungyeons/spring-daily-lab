@@ -2,6 +2,8 @@ package com.jungyeons.dailylab.task.api;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
@@ -18,6 +20,7 @@ public record TaskResponse(
 		Instant createdAt,
 		Instant updatedAt,
 		Instant completedAt,
+		Set<Long> prerequisiteIds,
 		long version
 ) {
 	public static TaskResponse from(GrowthTask task) {
@@ -32,6 +35,10 @@ public record TaskResponse(
 				task.getCreatedAt(),
 				task.getUpdatedAt(),
 				task.getCompletedAt(),
+				task.getPrerequisites().stream()
+					.map(GrowthTask::getId)
+					.sorted()
+					.collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new)),
 				task.getVersion()
 		);
 	}

@@ -1,6 +1,9 @@
 package com.jungyeons.dailylab.task;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jungyeons.dailylab.common.TaskNotFoundException;
+import com.jungyeons.dailylab.common.TaskDependencyCycleException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
@@ -76,6 +80,25 @@ public class TaskService {
 		return TaskResponse.from(task);
 	}
 
+	public TaskResponse addPrerequisite(long id, long prerequisiteId) {
+		GrowthTask task = getTask(id);
+		GrowthTask prerequisite = getTask(prerequisiteId);
+		if (reaches(prerequisite, task.getId(), new HashSet<>())) {
+			throw new TaskDependencyCycleException();
+		}
+		task.addPrerequisite(prerequisite);
+		return TaskResponse.from(task);
+	}
+
+	public void removePrerequisite(long id, long prerequisiteId) {
+		getTask(id).removePrerequisite(getTask(prerequisiteId));
+	}
+
+	@Transactional(readOnly = true)
+	public List<TaskResponse> findPrerequisites(long id) {
+		return getTask(id).getPrerequisites().stream().map(TaskResponse::from).toList();
+	}
+
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
 		taskRepository.delete(task);
@@ -94,5 +117,15 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private boolean reaches(GrowthTask current, Long targetId, Set<Long> visited) {
+		if (current.getId().equals(targetId)) {
+			return true;
+		}
+		if (!visited.add(current.getId())) {
+			return false;
+		}
+		return current.getPrerequisites().stream().anyMatch(task -> reaches(task, targetId, visited));
 	}
 }
