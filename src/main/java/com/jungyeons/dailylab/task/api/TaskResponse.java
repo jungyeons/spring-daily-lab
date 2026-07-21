@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import com.jungyeons.dailylab.domain.GrowthTask;
+import com.jungyeons.dailylab.domain.RecurrenceFrequency;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 
@@ -17,8 +18,10 @@ public record TaskResponse(
 		LocalDate dueDate,
 		Instant createdAt,
 		Instant updatedAt,
-		Instant completedAt,
-		long version
+	Instant completedAt,
+	RecurrenceFrequency recurrenceFrequency,
+	Instant recurrenceGeneratedAt,
+	long version
 ) {
 	public static TaskResponse from(GrowthTask task) {
 		return new TaskResponse(
@@ -30,9 +33,11 @@ public record TaskResponse(
 				task.getPriority(),
 				task.getDueDate(),
 				task.getCreatedAt(),
-				task.getUpdatedAt(),
-				task.getCompletedAt(),
-				task.getVersion()
+			task.getUpdatedAt(),
+			task.getCompletedAt(),
+			task.getRecurrenceFrequency(),
+			task.getRecurrenceGeneratedAt(),
+			task.getVersion()
 		);
 	}
 }

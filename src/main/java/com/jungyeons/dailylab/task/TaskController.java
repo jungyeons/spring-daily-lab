@@ -21,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
+import com.jungyeons.dailylab.task.api.ConfigureRecurrenceRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
 import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
@@ -78,6 +79,24 @@ public class TaskController {
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
+	}
+
+	@PutMapping("/{id}/recurrence")
+	public TaskResponse configureRecurrence(
+			@PathVariable long id,
+			@Valid @RequestBody ConfigureRecurrenceRequest request
+	) {
+		return taskService.configureRecurrence(id, request.frequency());
+	}
+
+	@PostMapping("/{id}/recurrence/next")
+	public ResponseEntity<TaskResponse> generateNextRecurringTask(@PathVariable long id) {
+		TaskResponse created = taskService.generateNextRecurringTask(id);
+		URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
+				.path("/api/v1/tasks/{id}")
+				.buildAndExpand(created.id())
+				.toUri();
+		return ResponseEntity.created(location).body(created);
 	}
 
 	@DeleteMapping("/{id}")

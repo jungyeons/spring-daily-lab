@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jungyeons.dailylab.common.TaskNotFoundException;
 import com.jungyeons.dailylab.domain.GrowthTask;
+import com.jungyeons.dailylab.domain.RecurrenceFrequency;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
@@ -74,6 +75,17 @@ public class TaskService {
 		GrowthTask task = getTask(id);
 		task.changeStatus(request.status());
 		return TaskResponse.from(task);
+	}
+
+	public TaskResponse configureRecurrence(long id, RecurrenceFrequency frequency) {
+		GrowthTask task = getTask(id);
+		task.configureRecurrence(frequency);
+		return TaskResponse.from(task);
+	}
+
+	public TaskResponse generateNextRecurringTask(long id) {
+		GrowthTask task = getTask(id);
+		return TaskResponse.from(taskRepository.save(task.generateNextRecurringTask()));
 	}
 
 	public void delete(long id) {

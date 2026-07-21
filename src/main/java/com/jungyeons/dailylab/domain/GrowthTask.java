@@ -16,6 +16,8 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
+import com.jungyeons.dailylab.common.TaskRecurrenceConflictException;
+
 @Entity
 @Table(name = "growth_tasks")
 public class GrowthTask {
@@ -50,6 +52,12 @@ public class GrowthTask {
 	private Instant updatedAt;
 
 	private Instant completedAt;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 16)
+	private RecurrenceFrequency recurrenceFrequency;
+
+	private Instant recurrenceGeneratedAt;
 
 	@Version
 	@Column(nullable = false)
@@ -94,6 +102,35 @@ public class GrowthTask {
 	public void changeStatus(TaskStatus newStatus) {
 		this.status = Objects.requireNonNull(newStatus, "status must not be null");
 		this.completedAt = newStatus == TaskStatus.DONE ? Instant.now() : null;
+	}
+
+	public void configureRecurrence(RecurrenceFrequency frequency) {
+		if (dueDate == null) {
+			throw new TaskRecurrenceConflictException("A recurring task must have a due date");
+		}
+		if (recurrenceGeneratedAt != null) {
+			throw new TaskRecurrenceConflictException("The next recurring task has already been generated");
+		}
+		this.recurrenceFrequency = Objects.requireNonNull(frequency, "frequency must not be null");
+	}
+
+	public GrowthTask generateNextRecurringTask() {
+		if (recurrenceFrequency == null) {
+			throw new TaskRecurrenceConflictException("The task does not have a recurrence rule");
+		}
+		if (recurrenceGeneratedAt != null) {
+			throw new TaskRecurrenceConflictException("The next recurring task has already been generated");
+		}
+		GrowthTask nextTask = GrowthTask.create(
+				title,
+				description,
+				category,
+				priority,
+				recurrenceFrequency.nextDueDate(dueDate)
+		);
+		nextTask.recurrenceFrequency = recurrenceFrequency;
+		recurrenceGeneratedAt = Instant.now();
+		return nextTask;
 	}
 
 	public boolean isOverdue(LocalDate today) {
@@ -168,6 +205,14 @@ public class GrowthTask {
 
 	public Instant getCompletedAt() {
 		return completedAt;
+	}
+
+	public RecurrenceFrequency getRecurrenceFrequency() {
+		return recurrenceFrequency;
+	}
+
+	public Instant getRecurrenceGeneratedAt() {
+		return recurrenceGeneratedAt;
 	}
 
 	public long getVersion() {

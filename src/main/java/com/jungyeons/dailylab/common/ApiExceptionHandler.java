@@ -55,4 +55,11 @@ public class ApiExceptionHandler {
 		problem.setTitle("Concurrent update conflict");
 		return problem;
 	}
+
+	@ExceptionHandler(TaskRecurrenceConflictException.class)
+	ProblemDetail handleRecurrenceConflict(TaskRecurrenceConflictException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+		problem.setTitle("Task recurrence conflict");
+		return problem;
+	}
 }

@@ -62,6 +62,16 @@ curl -X PATCH http://localhost:8080/api/v1/tasks/1/status \
   -d '{"status":"DONE"}'
 ```
 
+매주 반복할 작업 설정과 다음 작업 생성:
+
+```bash
+curl -X PUT http://localhost:8080/api/v1/tasks/1/recurrence \
+  -H 'Content-Type: application/json' \
+  -d '{"frequency":"WEEKLY"}'
+
+curl -X POST http://localhost:8080/api/v1/tasks/1/recurrence/next
+```
+
 요약 통계:
 
 ```bash
@@ -77,6 +87,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
+| `PUT` | `/api/v1/tasks/{id}/recurrence` | 일·주·월 반복 규칙 설정 |
+| `POST` | `/api/v1/tasks/{id}/recurrence/next` | 다음 반복 작업 생성 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
