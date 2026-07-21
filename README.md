@@ -88,7 +88,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 ./gradlew check
 ```
 
-CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
+CI는 pull request와 `main` push에서 같은 검사를 실행하고, 빌드한 컨테이너 이미지의 해결 가능한 high·critical 취약점도 차단합니다.
 
 ## 데이터베이스 설정
 

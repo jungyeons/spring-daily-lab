@@ -77,5 +77,5 @@
 - [ ] `DEVX-006` 변경 로그 생성과 태그 릴리스 워크플로를 추가한다.
 - [ ] `DEVX-007` CycloneDX SBOM 생성과 보관을 CI에 추가한다.
 - [ ] `DEVX-008` 의존성 검토와 알려진 취약점 검사를 CI에 추가한다.
-- [ ] `DEVX-009` 컨테이너 이미지 취약점 검사를 CI에 추가한다.
+- [x] `DEVX-009` 컨테이너 이미지 취약점 검사를 CI에 추가한다.
 - [ ] `DEVX-010` Kubernetes Deployment·Service·ConfigMap 예제를 추가한다.
