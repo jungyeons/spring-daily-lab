@@ -54,6 +54,13 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+삭제된 작업 조회와 복원:
+
+```bash
+curl 'http://localhost:8080/api/v1/tasks?deleted=true'
+curl -X POST http://localhost:8080/api/v1/tasks/1/restore
+```
+
 상태 변경:
 
 ```bash
@@ -73,11 +80,12 @@ curl http://localhost:8080/api/v1/tasks/summary
 | Method | Path | 설명 |
 | --- | --- | --- |
 | `POST` | `/api/v1/tasks` | 작업 생성 |
-| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류 필터 |
+| `GET` | `/api/v1/tasks` | 페이지 목록 및 상태·분류·삭제 여부 필터 |
 | `GET` | `/api/v1/tasks/{id}` | 단일 작업 조회 |
 | `PUT` | `/api/v1/tasks/{id}` | 작업 전체 수정 |
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
+| `POST` | `/api/v1/tasks/{id}/restore` | 소프트 삭제 작업 복원 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.

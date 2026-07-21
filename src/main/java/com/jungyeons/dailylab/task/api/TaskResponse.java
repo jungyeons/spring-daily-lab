@@ -16,9 +16,10 @@ public record TaskResponse(
 		int priority,
 		LocalDate dueDate,
 		Instant createdAt,
-		Instant updatedAt,
-		Instant completedAt,
-		long version
+	Instant updatedAt,
+	Instant completedAt,
+	Instant deletedAt,
+	long version
 ) {
 	public static TaskResponse from(GrowthTask task) {
 		return new TaskResponse(
@@ -30,9 +31,10 @@ public record TaskResponse(
 				task.getPriority(),
 				task.getDueDate(),
 				task.getCreatedAt(),
-				task.getUpdatedAt(),
-				task.getCompletedAt(),
-				task.getVersion()
+			task.getUpdatedAt(),
+			task.getCompletedAt(),
+			task.getDeletedAt(),
+			task.getVersion()
 		);
 	}
 }

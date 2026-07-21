@@ -18,7 +18,33 @@ public interface TaskRepository extends JpaRepository<GrowthTask, Long> {
 
 	Page<GrowthTask> findByStatusAndCategory(TaskStatus status, TaskCategory category, Pageable pageable);
 
-	long countByStatus(TaskStatus status);
+	Page<GrowthTask> findByDeletedAtIsNull(Pageable pageable);
 
-	long countByDueDateBeforeAndStatusNot(LocalDate date, TaskStatus status);
+	Page<GrowthTask> findByDeletedAtIsNullAndStatus(TaskStatus status, Pageable pageable);
+
+	Page<GrowthTask> findByDeletedAtIsNullAndCategory(TaskCategory category, Pageable pageable);
+
+	Page<GrowthTask> findByDeletedAtIsNullAndStatusAndCategory(
+			TaskStatus status,
+			TaskCategory category,
+			Pageable pageable
+	);
+
+	Page<GrowthTask> findByDeletedAtIsNotNull(Pageable pageable);
+
+	Page<GrowthTask> findByDeletedAtIsNotNullAndStatus(TaskStatus status, Pageable pageable);
+
+	Page<GrowthTask> findByDeletedAtIsNotNullAndCategory(TaskCategory category, Pageable pageable);
+
+	Page<GrowthTask> findByDeletedAtIsNotNullAndStatusAndCategory(
+			TaskStatus status,
+			TaskCategory category,
+			Pageable pageable
+	);
+
+	long countByDeletedAtIsNull();
+
+	long countByDeletedAtIsNullAndStatus(TaskStatus status);
+
+	long countByDeletedAtIsNullAndDueDateBeforeAndStatusNot(LocalDate date, TaskStatus status);
 }

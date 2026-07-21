@@ -16,6 +16,8 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
+import com.jungyeons.dailylab.common.TaskDeletionConflictException;
+
 @Entity
 @Table(name = "growth_tasks")
 public class GrowthTask {
@@ -50,6 +52,8 @@ public class GrowthTask {
 	private Instant updatedAt;
 
 	private Instant completedAt;
+
+	private Instant deletedAt;
 
 	@Version
 	@Column(nullable = false)
@@ -98,6 +102,24 @@ public class GrowthTask {
 
 	public boolean isOverdue(LocalDate today) {
 		return dueDate != null && dueDate.isBefore(today) && status != TaskStatus.DONE;
+	}
+
+	public void softDelete() {
+		if (deletedAt != null) {
+			throw new TaskDeletionConflictException("The task is already deleted");
+		}
+		deletedAt = Instant.now();
+	}
+
+	public void restore() {
+		if (deletedAt == null) {
+			throw new TaskDeletionConflictException("The task is not deleted");
+		}
+		deletedAt = null;
+	}
+
+	public boolean isDeleted() {
+		return deletedAt != null;
 	}
 
 	@PrePersist
@@ -168,6 +190,10 @@ public class GrowthTask {
 
 	public Instant getCompletedAt() {
 		return completedAt;
+	}
+
+	public Instant getDeletedAt() {
+		return deletedAt;
 	}
 
 	public long getVersion() {
