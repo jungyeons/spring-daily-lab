@@ -58,4 +58,40 @@ class TaskServiceIntegrationTest {
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
 	}
+
+	@Test
+	void softDeletesRestoresAndSeparatesDeletedTasksFromActiveViews() {
+		TaskResponse active = taskService.create(new CreateTaskRequest(
+				"Keep active",
+				null,
+				TaskCategory.FEATURE,
+				3,
+				LocalDate.now().plusDays(1)
+		));
+		TaskResponse deleted = taskService.create(new CreateTaskRequest(
+				"Restore later",
+				null,
+				TaskCategory.TEST,
+				2,
+				LocalDate.now().minusDays(1)
+		));
+
+		taskService.delete(deleted.id());
+
+		assertThat(taskService.findAll(null, null, PageRequest.of(0, 20)))
+				.extracting(TaskResponse::id)
+				.containsExactly(active.id());
+		assertThat(taskService.findAll(null, null, true, PageRequest.of(0, 20)))
+				.extracting(TaskResponse::id)
+				.containsExactly(deleted.id());
+		assertThat(taskService.findById(deleted.id()).deletedAt()).isNotNull();
+		assertThat(taskService.summary().total()).isOne();
+		assertThat(taskService.summary().overdue()).isZero();
+
+		TaskResponse restored = taskService.restore(deleted.id());
+
+		assertThat(restored.deletedAt()).isNull();
+		assertThat(taskService.findAll(null, null, PageRequest.of(0, 20))).hasSize(2);
+		assertThat(taskService.findAll(null, null, true, PageRequest.of(0, 20))).isEmpty();
+	}
 }

@@ -52,9 +52,10 @@ public class TaskController {
 	public Page<TaskResponse> findAll(
 			@RequestParam(required = false) TaskStatus status,
 			@RequestParam(required = false) TaskCategory category,
+			@RequestParam(defaultValue = "false") boolean deleted,
 			@PageableDefault(size = 20, sort = "createdAt") Pageable pageable
 	) {
-		return taskService.findAll(status, category, pageable);
+		return taskService.findAll(status, category, deleted, pageable);
 	}
 
 	@GetMapping("/summary")
@@ -84,5 +85,10 @@ public class TaskController {
 	public ResponseEntity<Void> delete(@PathVariable long id) {
 		taskService.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{id}/restore")
+	public TaskResponse restore(@PathVariable long id) {
+		return taskService.restore(id);
 	}
 }

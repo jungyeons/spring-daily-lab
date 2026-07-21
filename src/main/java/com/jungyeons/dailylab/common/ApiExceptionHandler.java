@@ -55,4 +55,11 @@ public class ApiExceptionHandler {
 		problem.setTitle("Concurrent update conflict");
 		return problem;
 	}
+
+	@ExceptionHandler(TaskDeletionConflictException.class)
+	ProblemDetail handleDeletionConflict(TaskDeletionConflictException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+		problem.setTitle("Task deletion conflict");
+		return problem;
+	}
 }
