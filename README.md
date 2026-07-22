@@ -82,6 +82,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
+쓰기 API는 IP별 분당 60회, 로그인 경로는 분당 5회로 제한합니다. 한도를 초과하면 `429 Too Many Requests`와 `Retry-After` 헤더를 반환합니다.
+
 ## 검증
 
 ```bash
