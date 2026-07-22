@@ -24,6 +24,12 @@ spring:
 server:
   shutdown: graceful
 
+security:
+  rate-limit:
+    login-max-requests: 5
+    write-max-requests: 60
+    window: 1m
+
 management:
   endpoints:
     web:
