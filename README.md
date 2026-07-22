@@ -90,6 +90,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+Docker를 사용할 수 있는 환경에서는 PostgreSQL Testcontainers 통합 테스트가 Flyway 마이그레이션과 작업 저장·조회 흐름을 실제 PostgreSQL에서도 검증합니다.
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.

@@ -37,7 +37,7 @@
 - [ ] `DATA-005` 도메인 이벤트용 transactional outbox를 구현한다.
 - [ ] `DATA-006` outbox 재시도와 실패 격리 정책을 추가한다.
 - [ ] `DATA-007` Flyway 마이그레이션 네이밍 검사를 CI에 추가한다.
-- [ ] `DATA-008` PostgreSQL Testcontainers 통합 테스트를 추가한다.
+- [x] `DATA-008` PostgreSQL Testcontainers 통합 테스트를 추가한다.
 - [ ] `DATA-009` 데이터베이스 제약조건 회귀 테스트를 추가한다.
 - [ ] `DATA-010` 백업·복원 절차와 검증 스크립트를 문서화한다.
 
