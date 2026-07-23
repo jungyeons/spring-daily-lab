@@ -20,6 +20,14 @@ spring:
           time_zone: UTC
   lifecycle:
     timeout-per-shutdown-phase: 20s
+  servlet:
+    multipart:
+      max-file-size: "${MAX_UPLOAD_FILE_SIZE:10MB}"
+      max-request-size: "${MAX_UPLOAD_REQUEST_SIZE:10MB}"
+
+app:
+  http:
+    max-request-body-size: "${MAX_REQUEST_BODY_SIZE:1MB}"
 
 server:
   shutdown: graceful
