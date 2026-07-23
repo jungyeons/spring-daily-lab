@@ -100,8 +100,15 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 | `DB_USERNAME` | `sa` |
 | `DB_PASSWORD` | 빈 값 |
 | `H2_CONSOLE_ENABLED` | `true` |
+| `MAX_REQUEST_BODY_SIZE` | `1MB` |
+| `MAX_UPLOAD_FILE_SIZE` | `10MB` |
+| `MAX_UPLOAD_REQUEST_SIZE` | `10MB` |
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
+
+API의 `POST`, `PUT`, `PATCH` 본문이 `MAX_REQUEST_BODY_SIZE`를 초과하면 서버는 본문을
+역직렬화하기 전에 `413 Payload Too Large` Problem Details를 반환합니다. multipart 업로드는
+파일별·요청 전체 상한을 별도로 적용합니다.
 
 ## 기여 자동화 원칙
 
