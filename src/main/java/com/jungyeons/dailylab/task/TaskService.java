@@ -11,6 +11,7 @@ import com.jungyeons.dailylab.common.TaskNotFoundException;
 import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
+import com.jungyeons.dailylab.outbox.OutboxEventRecorder;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
@@ -22,9 +23,11 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final OutboxEventRecorder outboxEventRecorder;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, OutboxEventRecorder outboxEventRecorder) {
 		this.taskRepository = taskRepository;
+		this.outboxEventRecorder = outboxEventRecorder;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -35,7 +38,9 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
-		return TaskResponse.from(taskRepository.save(task));
+		GrowthTask saved = taskRepository.save(task);
+		outboxEventRecorder.recordTaskEvent(OutboxEventRecorder.TASK_CREATED, saved);
+		return TaskResponse.from(saved);
 	}
 
 	@Transactional(readOnly = true)
@@ -67,17 +72,20 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		outboxEventRecorder.recordTaskEvent(OutboxEventRecorder.TASK_UPDATED, task);
 		return TaskResponse.from(task);
 	}
 
 	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request) {
 		GrowthTask task = getTask(id);
 		task.changeStatus(request.status());
+		outboxEventRecorder.recordTaskEvent(OutboxEventRecorder.TASK_STATUS_CHANGED, task);
 		return TaskResponse.from(task);
 	}
 
 	public void delete(long id) {
 		GrowthTask task = getTask(id);
+		outboxEventRecorder.recordTaskEvent(OutboxEventRecorder.TASK_DELETED, task);
 		taskRepository.delete(task);
 	}
 
