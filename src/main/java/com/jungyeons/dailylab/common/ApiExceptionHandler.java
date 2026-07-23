@@ -11,6 +11,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.jungyeons.dailylab.dashboard.InvalidDashboardConfigurationException;
+
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
@@ -43,6 +45,13 @@ public class ApiExceptionHandler {
 				"Malformed JSON or unsupported enum value"
 		);
 		problem.setTitle("Unreadable request");
+		return problem;
+	}
+
+	@ExceptionHandler(InvalidDashboardConfigurationException.class)
+	ProblemDetail handleInvalidDashboardConfiguration(InvalidDashboardConfigurationException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+		problem.setTitle("Invalid dashboard configuration");
 		return problem;
 	}
 

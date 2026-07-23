@@ -79,8 +79,22 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `PATCH` | `/api/v1/tasks/{id}/status` | 상태 변경 |
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
+| `GET` | `/api/v1/dashboards/{dashboardKey}/widgets` | 대시보드 위젯 설정 조회 |
+| `PUT` | `/api/v1/dashboards/{dashboardKey}/widgets` | 대시보드 위젯 순서·크기 저장 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
+
+대시보드 설정은 클라이언트가 정한 `dashboardKey`별로 분리됩니다. `PUT` 요청의 배열 순서가
+화면 표시 순서가 되며, 빈 배열을 보내면 해당 대시보드의 모든 위젯을 숨깁니다.
+
+```json
+{
+  "widgets": [
+    {"type": "TASK_SUMMARY", "size": "SMALL"},
+    {"type": "OVERDUE_TASKS", "size": "LARGE"}
+  ]
+}
+```
 
 ## 검증
 
