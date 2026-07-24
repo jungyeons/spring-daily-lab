@@ -54,6 +54,8 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+페이지 정렬 값이 같은 작업은 ID 오름차순으로 정렬해 페이지를 넘길 때 결과 순서를 안정적으로 유지합니다.
+
 상태 변경:
 
 ```bash

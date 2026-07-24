@@ -3,7 +3,9 @@ package com.jungyeons.dailylab.task;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +42,16 @@ public class TaskService {
 
 	@Transactional(readOnly = true)
 	public Page<TaskResponse> findAll(TaskStatus status, TaskCategory category, Pageable pageable) {
+		Pageable stablePageable = withStableSort(pageable);
 		Page<GrowthTask> tasks;
 		if (status != null && category != null) {
-			tasks = taskRepository.findByStatusAndCategory(status, category, pageable);
+			tasks = taskRepository.findByStatusAndCategory(status, category, stablePageable);
 		} else if (status != null) {
-			tasks = taskRepository.findByStatus(status, pageable);
+			tasks = taskRepository.findByStatus(status, stablePageable);
 		} else if (category != null) {
-			tasks = taskRepository.findByCategory(category, pageable);
+			tasks = taskRepository.findByCategory(category, stablePageable);
 		} else {
-			tasks = taskRepository.findAll(pageable);
+			tasks = taskRepository.findAll(stablePageable);
 		}
 		return tasks.map(TaskResponse::from);
 	}
@@ -94,5 +97,13 @@ public class TaskService {
 
 	private GrowthTask getTask(long id) {
 		return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
+	}
+
+	private Pageable withStableSort(Pageable pageable) {
+		if (pageable.isUnpaged() || pageable.getSort().getOrderFor("id") != null) {
+			return pageable;
+		}
+		Sort stableSort = pageable.getSort().and(Sort.by("id"));
+		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), stableSort);
 	}
 }
