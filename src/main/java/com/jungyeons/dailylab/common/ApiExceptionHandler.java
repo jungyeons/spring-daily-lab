@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -43,6 +44,17 @@ public class ApiExceptionHandler {
 				"Malformed JSON or unsupported enum value"
 		);
 		problem.setTitle("Unreadable request");
+		return problem;
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	ProblemDetail handleInvalidParameter(MethodArgumentTypeMismatchException exception) {
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+				HttpStatus.BAD_REQUEST,
+				"Parameter '%s' has an unsupported value".formatted(exception.getName())
+		);
+		problem.setTitle("Invalid parameter");
+		problem.setProperty("parameter", exception.getName());
 		return problem;
 	}
 

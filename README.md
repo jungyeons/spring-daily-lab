@@ -80,7 +80,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `DELETE` | `/api/v1/tasks/{id}` | 작업 삭제 |
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
-잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
+잘못된 요청 본문과 지원하지 않는 상태·분류 쿼리 값은 RFC 9457 Problem Details 형식으로 응답합니다.
 
 ## 검증
 
