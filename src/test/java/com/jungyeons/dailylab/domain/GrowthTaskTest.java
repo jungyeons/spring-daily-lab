@@ -35,4 +35,28 @@ class GrowthTaskTest {
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("priority");
 	}
+
+	@Test
+	void textFieldsMustStayWithinDatabaseColumnLimits() {
+		assertThatThrownBy(() -> GrowthTask.create(
+				"x".repeat(121),
+				null,
+				TaskCategory.FEATURE,
+				3,
+				null
+		))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("title");
+
+		GrowthTask task = GrowthTask.create("Valid", null, TaskCategory.FEATURE, 3, null);
+		assertThatThrownBy(() -> task.update(
+				"Valid",
+				"x".repeat(2001),
+				TaskCategory.FEATURE,
+				3,
+				null
+		))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("description");
+	}
 }
