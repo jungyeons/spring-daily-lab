@@ -82,6 +82,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
 
+새 작업의 마감일은 오늘 또는 미래여야 합니다. 이미 기한이 지난 작업은 기존 마감일을 유지한 채 제목, 설명, 분류 또는 우선순위를 수정할 수 있습니다.
+
 ## 검증
 
 ```bash
