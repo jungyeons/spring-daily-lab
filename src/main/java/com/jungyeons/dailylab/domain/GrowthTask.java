@@ -20,6 +20,9 @@ import jakarta.persistence.Version;
 @Table(name = "growth_tasks")
 public class GrowthTask {
 
+	private static final int MAX_TITLE_LENGTH = 120;
+	private static final int MAX_DESCRIPTION_LENGTH = 2000;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -116,11 +119,22 @@ public class GrowthTask {
 		if (value == null || value.isBlank()) {
 			throw new IllegalArgumentException("title must not be blank");
 		}
-		return value.trim();
+		String normalized = value.trim();
+		if (normalized.length() > MAX_TITLE_LENGTH) {
+			throw new IllegalArgumentException("title must not exceed 120 characters");
+		}
+		return normalized;
 	}
 
 	private static String normalizeDescription(String value) {
-		return value == null || value.isBlank() ? null : value.trim();
+		if (value == null || value.isBlank()) {
+			return null;
+		}
+		String normalized = value.trim();
+		if (normalized.length() > MAX_DESCRIPTION_LENGTH) {
+			throw new IllegalArgumentException("description must not exceed 2000 characters");
+		}
+		return normalized;
 	}
 
 	private static int validatePriority(int value) {
