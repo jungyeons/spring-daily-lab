@@ -92,8 +92,13 @@ public class GrowthTask {
 	}
 
 	public void changeStatus(TaskStatus newStatus) {
-		this.status = Objects.requireNonNull(newStatus, "status must not be null");
-		this.completedAt = newStatus == TaskStatus.DONE ? Instant.now() : null;
+		TaskStatus targetStatus = Objects.requireNonNull(newStatus, "status must not be null");
+		if (targetStatus == TaskStatus.DONE && status != TaskStatus.DONE) {
+			completedAt = Instant.now();
+		} else if (targetStatus != TaskStatus.DONE) {
+			completedAt = null;
+		}
+		status = targetStatus;
 	}
 
 	public boolean isOverdue(LocalDate today) {

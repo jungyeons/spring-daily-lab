@@ -21,6 +21,17 @@ class GrowthTaskTest {
 	}
 
 	@Test
+	void completingAnAlreadyCompletedTaskPreservesTheOriginalTimestamp() {
+		GrowthTask task = GrowthTask.create("Write tests", null, TaskCategory.TEST, 3, null);
+		task.changeStatus(TaskStatus.DONE);
+		var originalCompletedAt = task.getCompletedAt();
+
+		task.changeStatus(TaskStatus.DONE);
+
+		assertThat(task.getCompletedAt()).isEqualTo(originalCompletedAt);
+	}
+
+	@Test
 	void overdueOnlyAppliesToIncompleteTasks() {
 		GrowthTask task = GrowthTask.create("Review backlog", null, TaskCategory.LEARNING, 2, LocalDate.now().minusDays(1));
 
