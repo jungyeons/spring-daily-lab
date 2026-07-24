@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import com.jungyeons.dailylab.domain.TaskCategory;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +15,6 @@ public record UpdateTaskRequest(
 		@Size(max = 2000) String description,
 		@NotNull TaskCategory category,
 		@NotNull @Min(1) @Max(5) Integer priority,
-		@FutureOrPresent LocalDate dueDate
+		LocalDate dueDate
 ) {
 }
