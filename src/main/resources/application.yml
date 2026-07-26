@@ -18,6 +18,9 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+  mvc:
+    problemdetails:
+      enabled: true
   lifecycle:
     timeout-per-shutdown-phase: 20s
 
