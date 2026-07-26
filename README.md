@@ -54,6 +54,8 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+한 페이지에는 최대 100개의 작업을 요청할 수 있습니다. 더 큰 `size` 값은 100으로 제한됩니다.
+
 상태 변경:
 
 ```bash

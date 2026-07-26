@@ -10,6 +10,10 @@ spring:
   h2:
     console:
       enabled: "${H2_CONSOLE_ENABLED:true}"
+  data:
+    web:
+      pageable:
+        max-page-size: 100
   jpa:
     hibernate:
       ddl-auto: validate
