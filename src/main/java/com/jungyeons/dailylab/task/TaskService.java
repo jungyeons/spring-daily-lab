@@ -83,13 +83,7 @@ public class TaskService {
 
 	@Transactional(readOnly = true)
 	public TaskSummaryResponse summary() {
-		return new TaskSummaryResponse(
-				taskRepository.count(),
-				taskRepository.countByStatus(TaskStatus.TODO),
-				taskRepository.countByStatus(TaskStatus.IN_PROGRESS),
-				taskRepository.countByStatus(TaskStatus.DONE),
-				taskRepository.countByDueDateBeforeAndStatusNot(LocalDate.now(), TaskStatus.DONE)
-		);
+		return taskRepository.summarize(LocalDate.now());
 	}
 
 	private GrowthTask getTask(long id) {
