@@ -89,6 +89,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 ```
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
+Gradle Wrapper는 공식 배포본의 SHA-256 체크섬을 확인한 뒤 빌드를 실행합니다.
 
 ## 데이터베이스 설정
 
