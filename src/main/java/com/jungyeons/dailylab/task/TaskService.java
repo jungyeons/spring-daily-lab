@@ -1,5 +1,6 @@
 package com.jungyeons.dailylab.task;
 
+import java.time.Clock;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
@@ -22,9 +23,11 @@ import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 public class TaskService {
 
 	private final TaskRepository taskRepository;
+	private final Clock clock;
 
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(TaskRepository taskRepository, Clock clock) {
 		this.taskRepository = taskRepository;
+		this.clock = clock;
 	}
 
 	public TaskResponse create(CreateTaskRequest request) {
@@ -88,7 +91,7 @@ public class TaskService {
 				taskRepository.countByStatus(TaskStatus.TODO),
 				taskRepository.countByStatus(TaskStatus.IN_PROGRESS),
 				taskRepository.countByStatus(TaskStatus.DONE),
-				taskRepository.countByDueDateBeforeAndStatusNot(LocalDate.now(), TaskStatus.DONE)
+				taskRepository.countByDueDateBeforeAndStatusNot(LocalDate.now(clock), TaskStatus.DONE)
 		);
 	}
 
