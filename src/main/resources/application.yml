@@ -42,3 +42,6 @@ info:
   app:
     name: Spring Daily Lab
     description: Daily growth task management API
+
+daily-lab:
+  time-zone: "${APP_TIME_ZONE:UTC}"

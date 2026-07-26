@@ -100,6 +100,9 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 | `DB_USERNAME` | `sa` |
 | `DB_PASSWORD` | 빈 값 |
 | `H2_CONSOLE_ENABLED` | `true` |
+| `APP_TIME_ZONE` | `UTC` |
+
+요약 통계의 기한 초과 기준일은 `APP_TIME_ZONE`에서 계산하며 IANA 시간대 ID(예: `Asia/Seoul`)를 사용할 수 있습니다.
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
 
