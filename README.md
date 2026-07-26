@@ -54,6 +54,8 @@ curl -i http://localhost:8080/api/v1/tasks \
 curl 'http://localhost:8080/api/v1/tasks?status=TODO&category=TEST&page=0&size=20'
 ```
 
+목록 응답은 `content` 배열과 `page.size`, `page.number`, `page.totalElements`, `page.totalPages` 메타데이터를 제공합니다.
+
 상태 변경:
 
 ```bash
