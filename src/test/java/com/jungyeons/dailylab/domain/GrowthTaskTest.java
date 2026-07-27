@@ -35,4 +35,32 @@ class GrowthTaskTest {
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("priority");
 	}
+
+	@Test
+	void rejectedUpdateDoesNotPartiallyChangeTask() {
+		LocalDate originalDueDate = LocalDate.now().plusDays(1);
+		GrowthTask task = GrowthTask.create(
+				"Original title",
+				"Original description",
+				TaskCategory.LEARNING,
+				2,
+				originalDueDate
+		);
+
+		assertThatThrownBy(() -> task.update(
+				"Changed title",
+				"Changed description",
+				TaskCategory.FEATURE,
+				0,
+				originalDueDate.plusDays(1)
+		))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("priority");
+
+		assertThat(task.getTitle()).isEqualTo("Original title");
+		assertThat(task.getDescription()).isEqualTo("Original description");
+		assertThat(task.getCategory()).isEqualTo(TaskCategory.LEARNING);
+		assertThat(task.getPriority()).isEqualTo(2);
+		assertThat(task.getDueDate()).isEqualTo(originalDueDate);
+	}
 }
