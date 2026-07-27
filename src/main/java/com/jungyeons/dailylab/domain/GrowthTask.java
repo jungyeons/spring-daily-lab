@@ -84,10 +84,15 @@ public class GrowthTask {
 			int priority,
 			LocalDate dueDate
 	) {
-		this.title = normalizeTitle(title);
-		this.description = normalizeDescription(description);
-		this.category = Objects.requireNonNull(category, "category must not be null");
-		this.priority = validatePriority(priority);
+		String normalizedTitle = normalizeTitle(title);
+		String normalizedDescription = normalizeDescription(description);
+		TaskCategory validatedCategory = Objects.requireNonNull(category, "category must not be null");
+		int validatedPriority = validatePriority(priority);
+
+		this.title = normalizedTitle;
+		this.description = normalizedDescription;
+		this.category = validatedCategory;
+		this.priority = validatedPriority;
 		this.dueDate = dueDate;
 	}
 
