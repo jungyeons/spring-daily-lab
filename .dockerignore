@@ -4,3 +4,6 @@
 build
 *.iml
 .idea
+.env
+.env.*
+!.env.example
