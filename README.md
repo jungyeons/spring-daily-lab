@@ -32,6 +32,8 @@ PostgreSQL과 애플리케이션을 함께 실행하려면:
 docker compose up --build
 ```
 
+Compose는 애플리케이션을 중지할 때 Spring의 20초 graceful shutdown이 끝날 수 있도록 최대 25초를 기다린 뒤 강제 종료합니다.
+
 ## API 예시
 
 작업 생성:
