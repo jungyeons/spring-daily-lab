@@ -89,6 +89,8 @@ curl http://localhost:8080/api/v1/tasks/summary
 ```
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
+Gradle 구성 캐시와 빌드 캐시가 기본으로 활성화되어 반복 실행 시 구성 결과와
+재사용 가능한 작업 출력을 복원합니다.
 
 ## 데이터베이스 설정
 
