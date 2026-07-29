@@ -81,6 +81,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
+경로의 작업 ID는 양의 정수여야 하며 0이나 음수는 `400 Bad Request`로 거부합니다.
 
 ## 검증
 
