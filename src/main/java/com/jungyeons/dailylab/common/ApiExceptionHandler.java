@@ -10,6 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -43,6 +44,28 @@ public class ApiExceptionHandler {
 				"Malformed JSON or unsupported enum value"
 		);
 		problem.setTitle("Unreadable request");
+		return problem;
+	}
+
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	ProblemDetail handleMethodValidation(HandlerMethodValidationException exception) {
+		Map<String, String> errors = new LinkedHashMap<>();
+		exception.getParameterValidationResults().forEach(result -> {
+			String parameter = result.getMethodParameter().getParameterName();
+			if (parameter == null) {
+				parameter = "argument" + result.getMethodParameter().getParameterIndex();
+			}
+			String parameterName = parameter;
+			result.getResolvableErrors().forEach(error ->
+					errors.putIfAbsent(parameterName, error.getDefaultMessage())
+			);
+		});
+		ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+				HttpStatus.BAD_REQUEST,
+				"Request validation failed"
+		);
+		problem.setTitle("Invalid request");
+		problem.setProperty("errors", errors);
 		return problem;
 	}
 

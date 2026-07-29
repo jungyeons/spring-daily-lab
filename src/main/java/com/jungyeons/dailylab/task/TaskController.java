@@ -27,6 +27,7 @@ import com.jungyeons.dailylab.task.api.TaskSummaryResponse;
 import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -63,25 +64,30 @@ public class TaskController {
 	}
 
 	@GetMapping("/{id}")
-	public TaskResponse findById(@PathVariable long id) {
+	public TaskResponse findById(@PathVariable @Positive(message = "must be a positive integer") long id) {
 		return taskService.findById(id);
 	}
 
 	@PutMapping("/{id}")
-	public TaskResponse update(@PathVariable long id, @Valid @RequestBody UpdateTaskRequest request) {
+	public TaskResponse update(
+			@PathVariable @Positive(message = "must be a positive integer") long id,
+			@Valid @RequestBody UpdateTaskRequest request
+	) {
 		return taskService.update(id, request);
 	}
 
 	@PatchMapping("/{id}/status")
 	public TaskResponse changeStatus(
-			@PathVariable long id,
+			@PathVariable @Positive(message = "must be a positive integer") long id,
 			@Valid @RequestBody ChangeTaskStatusRequest request
 	) {
 		return taskService.changeStatus(id, request);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable long id) {
+	public ResponseEntity<Void> delete(
+			@PathVariable @Positive(message = "must be a positive integer") long id
+	) {
 		taskService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
