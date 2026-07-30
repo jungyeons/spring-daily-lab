@@ -81,6 +81,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 | `GET` | `/api/v1/tasks/summary` | 상태 및 기한 초과 통계 |
 
 잘못된 요청은 RFC 9457 Problem Details 형식으로 응답합니다.
+제목과 설명의 앞뒤 공백은 유니코드 공백을 포함해 저장 전에 제거됩니다.
 
 ## 검증
 
