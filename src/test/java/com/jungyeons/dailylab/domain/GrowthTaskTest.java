@@ -35,4 +35,18 @@ class GrowthTaskTest {
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("priority");
 	}
+
+	@Test
+	void normalizesUnicodeWhitespaceAroundTaskText() {
+		GrowthTask task = GrowthTask.create(
+				"\u2003Write tests\u2003",
+				"\u2002Cover edge cases\u2002",
+				TaskCategory.TEST,
+				3,
+				null
+		);
+
+		assertThat(task.getTitle()).isEqualTo("Write tests");
+		assertThat(task.getDescription()).isEqualTo("Cover edge cases");
+	}
 }

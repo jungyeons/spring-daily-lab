@@ -116,11 +116,11 @@ public class GrowthTask {
 		if (value == null || value.isBlank()) {
 			throw new IllegalArgumentException("title must not be blank");
 		}
-		return value.trim();
+		return value.strip();
 	}
 
 	private static String normalizeDescription(String value) {
-		return value == null || value.isBlank() ? null : value.trim();
+		return value == null || value.isBlank() ? null : value.strip();
 	}
 
 	private static int validatePriority(int value) {
