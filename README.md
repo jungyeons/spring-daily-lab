@@ -90,6 +90,14 @@ curl http://localhost:8080/api/v1/tasks/summary
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 
+Gradle 의존성 버전은 `gradle.lockfile`에 고정되어 로컬과 CI가 같은 그래프를 사용합니다.
+의존성을 변경할 때는 잠금 파일을 함께 갱신합니다.
+
+```bash
+./gradlew dependencies --write-locks
+./gradlew check --no-daemon
+```
+
 ## 데이터베이스 설정
 
 환경 변수로 PostgreSQL 같은 외부 데이터베이스를 연결할 수 있습니다.
