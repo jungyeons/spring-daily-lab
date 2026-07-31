@@ -11,11 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jungyeons.dailylab.domain.GrowthTask;
 import com.jungyeons.dailylab.domain.TaskCategory;
 import com.jungyeons.dailylab.domain.TaskStatus;
 import com.jungyeons.dailylab.task.api.ChangeTaskStatusRequest;
 import com.jungyeons.dailylab.task.api.CreateTaskRequest;
 import com.jungyeons.dailylab.task.api.TaskResponse;
+import com.jungyeons.dailylab.task.api.UpdateTaskRequest;
 
 @SpringBootTest
 @Transactional
@@ -57,5 +59,41 @@ class TaskServiceIntegrationTest {
 		assertThat(completed.completedAt()).isNotNull();
 		assertThat(taskService.summary().done()).isEqualTo(1);
 		assertThat(taskService.summary().todo()).isZero();
+	}
+
+	@Test
+	void writeResponsesExposePersistedMetadata() {
+		TaskResponse created = taskService.create(new CreateTaskRequest(
+				"Document response metadata",
+				null,
+				TaskCategory.DOCUMENTATION,
+				2,
+				LocalDate.now().plusDays(1)
+		));
+
+		TaskResponse updated = taskService.update(created.id(), new UpdateTaskRequest(
+				"Document persisted metadata",
+				"Keep response timestamps and versions current",
+				TaskCategory.DOCUMENTATION,
+				3,
+				LocalDate.now().plusDays(2)
+		));
+		taskRepository.flush();
+		GrowthTask persistedUpdate = taskRepository.findById(created.id()).orElseThrow();
+
+		assertThat(updated.updatedAt()).isEqualTo(persistedUpdate.getUpdatedAt());
+		assertThat(updated.version()).isEqualTo(persistedUpdate.getVersion());
+		assertThat(updated.version()).isGreaterThan(created.version());
+
+		TaskResponse completed = taskService.changeStatus(
+				created.id(),
+				new ChangeTaskStatusRequest(TaskStatus.DONE)
+		);
+		taskRepository.flush();
+		GrowthTask persistedStatus = taskRepository.findById(created.id()).orElseThrow();
+
+		assertThat(completed.updatedAt()).isEqualTo(persistedStatus.getUpdatedAt());
+		assertThat(completed.version()).isEqualTo(persistedStatus.getVersion());
+		assertThat(completed.version()).isGreaterThan(updated.version());
 	}
 }
