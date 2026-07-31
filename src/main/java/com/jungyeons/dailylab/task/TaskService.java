@@ -67,12 +67,14 @@ public class TaskService {
 				request.priority(),
 				request.dueDate()
 		);
+		taskRepository.flush();
 		return TaskResponse.from(task);
 	}
 
 	public TaskResponse changeStatus(long id, ChangeTaskStatusRequest request) {
 		GrowthTask task = getTask(id);
 		task.changeStatus(request.status());
+		taskRepository.flush();
 		return TaskResponse.from(task);
 	}
 
