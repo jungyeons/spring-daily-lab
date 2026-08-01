@@ -89,6 +89,7 @@ curl http://localhost:8080/api/v1/tasks/summary
 ```
 
 CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
+Java 소스는 모든 `javac` lint 경고를 활성화하며, 새 경고가 발생하면 빌드가 실패합니다.
 
 ## 데이터베이스 설정
 
