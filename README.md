@@ -24,7 +24,15 @@
 
 - API: `http://localhost:8080/api/v1/tasks`
 - 상태 확인: `http://localhost:8080/actuator/health`
-- H2 콘솔: `http://localhost:8080/h2-console`
+
+개발 중 H2 콘솔이 필요하면 `bootRun`에서만 명시적으로 활성화합니다. 콘솔 모듈은
+실행 jar와 컨테이너 이미지에 포함되지 않습니다.
+
+```bash
+H2_CONSOLE_ENABLED=true ./gradlew bootRun
+```
+
+활성화한 콘솔은 `http://localhost:8080/h2-console`에서 사용할 수 있습니다.
 
 PostgreSQL과 애플리케이션을 함께 실행하려면:
 
@@ -99,7 +107,7 @@ CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
 | `DB_URL` | `jdbc:h2:mem:dailylab;...` |
 | `DB_USERNAME` | `sa` |
 | `DB_PASSWORD` | 빈 값 |
-| `H2_CONSOLE_ENABLED` | `true` |
+| `H2_CONSOLE_ENABLED` | `false` |
 
 스키마는 [Flyway 마이그레이션](src/main/resources/db/migration/V1__create_growth_tasks.sql)으로만 변경합니다.
 
