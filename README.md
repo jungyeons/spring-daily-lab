@@ -88,7 +88,16 @@ curl http://localhost:8080/api/v1/tasks/summary
 ./gradlew check
 ```
 
-CI도 pull request와 `main` push에서 같은 검사를 실행합니다.
+CI도 pull request와 `main` push에서 같은 검사를 실행합니다. Gradle은
+`gradle/verification-metadata.xml`에 기록된 SHA-256 checksum으로 빌드 플러그인과
+의존성 artifact를 검증하며, 일치하지 않는 파일은 빌드에서 거부합니다.
+
+의존성을 의도적으로 변경한 뒤 새 artifact의 checksum을 검토하고 반영하려면 다음
+명령을 실행합니다.
+
+```bash
+./gradlew --write-verification-metadata sha256 check --no-daemon
+```
 
 ## 데이터베이스 설정
 
